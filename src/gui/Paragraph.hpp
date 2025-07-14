@@ -96,7 +96,7 @@ public:
     Signal<Paragraph*, const std::string&> linkClicked;
 
 private:
-    void commit_changes(std::unique_ptr<TextSpan>& currentspan, bool translatable);
+    void commit_changes(std::unique_ptr<TextSpan>&& currentspan, bool translatable);
 
     class LinkRectangle
     {

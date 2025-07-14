@@ -222,7 +222,7 @@ Button::reLayout()
 void
 Button::setChildImage(Child& child, XmlReader& reader)
 {
-    std::unique_ptr<Image> image(new Image());
+    auto image = std::make_unique<Image>();
     image->parse(reader);
     resetChild(child, image.release());
 }
@@ -230,7 +230,7 @@ Button::setChildImage(Child& child, XmlReader& reader)
 void
 Button::setChildText(Child& child, XmlReader& reader)
 {
-    std::unique_ptr<Paragraph> paragraph(new Paragraph());
+    auto paragraph = std::make_unique<Paragraph>();
     paragraph->parse(reader);
     resetChild(child, paragraph.release());
 }

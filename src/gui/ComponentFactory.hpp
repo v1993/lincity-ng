@@ -80,7 +80,7 @@ class INTERN_##CLASS##Factory : public Factory                              \
 public:                                                                     \
   INTERN_##CLASS##Factory()                                                 \
   {                                                                         \
-    if(component_factories == 0)                                            \
+    if(component_factories == nullptr)                                      \
       component_factories = new ComponentFactories;                         \
                                                                             \
     component_factories->insert(std::make_pair(#CLASS, this));              \
@@ -88,7 +88,7 @@ public:                                                                     \
                                                                             \
   virtual Component* createComponent(XmlReader& reader)                     \
   {                                                                         \
-      std::unique_ptr<CLASS> component (new CLASS());                         \
+      auto component = std::make_unique<CLASS>();                           \
       component->parse(reader);                                             \
       return component.release();                                           \
   }                                                                         \

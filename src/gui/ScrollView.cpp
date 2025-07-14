@@ -83,7 +83,7 @@ ScrollView::parse(XmlReader& reader)
             std::string element = (const char*) reader.getName();
 
             if(element == "scrollbar") {
-                std::unique_ptr<ScrollBar> scrollbar (new ScrollBar());
+                auto scrollbar = std::make_unique<ScrollBar>();
                 scrollbar->parse(reader);
                 resetChild(scrollBar(), scrollbar.release());
             } else if(element == "contents") {

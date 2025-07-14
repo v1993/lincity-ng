@@ -209,7 +209,7 @@ World::load(const std::filesystem::path& filename) {
   else if(ldsv_version < LOADSAVE_VERSION_COMPAT)
     throw std::runtime_error("load/save version too old");
 
-  std::unique_ptr<World> world(new World());
+  auto world = std::make_unique<World>();
 
   // parse sections
   assert(xmlReader.get_node_type() == xmlpp::TextReader::NodeType::Element);

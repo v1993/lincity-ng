@@ -236,10 +236,9 @@ create_new_city(city_settings *city, int mapSize, int old_setup_ground,
 ) {
   assert(city);
 
-  std::unique_ptr<World> worldPtr(new World(mapSize));
-  World& world = *worldPtr;
+  auto world = std::make_unique<World>(mapSize);
 
-  coal_reserve_setup(world.map);
+  coal_reserve_setup(world->map);
 
   int global_mountainity = 100 + rand() % 300;
   int global_aridity = -1;
@@ -260,23 +259,23 @@ create_new_city(city_settings *city, int mapSize, int old_setup_ground,
   }
 
   if(old_setup_ground) {
-    setup_river(world.map);
-    setup_ground(world.map, global_mountainity);
+    setup_river(world->map);
+    setup_ground(world->map, global_mountainity);
   }
   else
-    new_setup_river_ground(world.map, global_mountainity, global_aridity);
+    new_setup_river_ground(world->map, global_mountainity, global_aridity);
 
-  setup_land(world.map, global_aridity, city && city->without_trees);
-  ore_reserve_setup(world.map);
+  setup_land(world->map, global_aridity, city && city->without_trees);
+  ore_reserve_setup(world->map);
 
   if(city->with_village)
-    random_start(world, city->without_trees);
+    random_start(*world, city->without_trees);
 
   // TODO: this was already done in setup_land. Need it be done again?
-  world.map.connect_transport(1, 1, world.map.len() - 2, world.map.len() - 2);
-  world.map.desert_water_frontiers(0, 0, world.map.len(), world.map.len());
+  world->map.connect_transport(1, 1, world->map.len() - 2, world->map.len() - 2);
+  world->map.desert_water_frontiers(0, 0, world->map.len(), world->map.len());
 
-  return worldPtr;
+  return world;
 }
 
 static void coal_reserve_setup(Map& map) {

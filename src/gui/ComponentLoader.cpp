@@ -85,7 +85,7 @@ Component* loadGUIFile(const std::filesystem::path& filename)
 
     std::string componentName = (const char*) reader.getName();
     if(componentName == "gui") {
-        std::unique_ptr<Desktop> desktop (new Desktop());
+        auto desktop = std::make_unique<Desktop>();
         desktop->parse(reader);
         return desktop.release();
     }

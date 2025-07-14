@@ -76,23 +76,23 @@ Paragraph::parseList(XmlReader& reader, const Style& )
     }
 
     // add a bullet char at the front of the text
-    TextSpan* currentspan = new TextSpan();
+    auto currentspan = std::make_unique<TextSpan>();
     currentspan->style = i->second;
     currentspan->text = " \342\200\242 ";
-    textspans.push_back(std::unique_ptr<TextSpan>(currentspan));
+    textspans.push_back(std::move(currentspan));
 
     parse(reader, i->second);
 }
 
 void
 Paragraph::commit_changes(
-  std::unique_ptr<TextSpan>& currentspan, bool translatable
+  std::unique_ptr<TextSpan>&& currentspan, bool translatable
 ) {
   if(currentspan) {
     if(translatable) {
       currentspan->text = GUI_TRANSLATE(currentspan->text);
     }
-    textspans.push_back(std::unique_ptr<TextSpan>(currentspan.release()));
+    textspans.push_back(std::move(currentspan));
     //std::cout << "new span: " << currentspan->text << std::endl;
     // currentspan = nullptr;
   }
@@ -135,7 +135,7 @@ Paragraph::parse(XmlReader& reader, const Style& parentstyle)
         std::string node((const char*) reader.getName());
         if(node == "span" || node == "i" || node == "b"
             || node == "a") {
-          commit_changes(currentspan,translatable);
+          commit_changes(std::move(currentspan),translatable);
 
           Style style(stylestack.back());
           if (node == "a") {
@@ -197,7 +197,7 @@ Paragraph::parse(XmlReader& reader, const Style& parentstyle)
         std::string node((const char*) reader.getName());
         if(node == "span" || node == "b" || node == "i"
             || node == "a") {
-          commit_changes(currentspan,translatable);
+          commit_changes(std::move(currentspan),translatable);
           stylestack.pop_back();
         } else {
           std::cerr << "Internal error: unknown node end: '" <<
@@ -212,7 +212,7 @@ Paragraph::parse(XmlReader& reader, const Style& parentstyle)
         currentspan->text = GUI_TRANSLATE(currentspan->text);
       }
       //std::cout << "completed span: " << currentspan->text << std::endl;
-      textspans.push_back(std::unique_ptr<TextSpan>(currentspan.release()));
+      textspans.push_back(std::move(currentspan));
     }
 }
 
@@ -563,11 +563,11 @@ Paragraph::setText(const std::string& newtext, const Style& style)
             mytext.erase(0,span_end);//drop first span
             mytext.erase(0,1);//kill the first tab
             span_end = mytext.find_first_of('\t',0); // next tab
-            TextSpan* span = new TextSpan();
+            auto span = std::make_unique<TextSpan>();
             span->style = style;
             span->style.toSpan();
             span->text = spantext;
-            textspans.push_back(std::unique_ptr<TextSpan>(span));
+            textspans.push_back(std::move(span));
             ++tabcount;
         }
         if (tabcount == 2)
@@ -585,11 +585,11 @@ Paragraph::setText(const std::string& newtext, const Style& style)
     }
     else // simple string to parse
     {
-        TextSpan* span = new TextSpan();
+        auto span = std::make_unique<TextSpan>();
         span->style = style;
         span->style.toSpan();
         span->text = newtext;
-        textspans.push_back(std::unique_ptr<TextSpan>(span));
+        textspans.push_back(std::move(span));
     }
 
     float oldWidth = width;
