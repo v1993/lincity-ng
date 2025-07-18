@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>       // for string, basic_string
 
-#include "Child.hpp"    // for Child (ptr only), Childs
+#include "Child.hpp"    // for Child (ptr only)
 #include "Rect2D.hpp"   // for Rect2D
 #include "Vector2.hpp"  // for Vector2
 
@@ -135,7 +135,7 @@ public:
     Vector2 relative2Global(const Vector2& pos);
 
 protected:
-    Childs childs;
+    std::vector<Child> childs;
 
     Child& addChild(Component* component);
     void resetChild(Child& child, Component* component);

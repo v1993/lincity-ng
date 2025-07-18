@@ -234,7 +234,7 @@ EconomyGraph::drawHistoryLineGraph(Painter& painter, Rect2D space) {
     switchEconomyGraphButton = getCheckButton( *root, "SwitchEconomyGraph" );
     switchEconomyGraphText = switchEconomyGraphButton->getCaptionText();
     switchEconomyGraphParagraph = dynamic_cast<Paragraph*>(
-      switchEconomyGraphButton->getCaption());
+      switchEconomyGraphButton->getCaption().get());
     redStyle = yellowStyle = normalStyle = switchEconomyGraphParagraph->getStyle();
     yellowStyle.text_color.parse("yellow");
     redStyle.text_color.parse("red");

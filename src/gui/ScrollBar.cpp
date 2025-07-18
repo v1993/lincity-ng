@@ -105,17 +105,17 @@ ScrollBar::parse(XmlReader& reader)
             }
         }
     }
-    if(scroller().getComponent() == 0 || button1().getComponent() == 0
-            || button2().getComponent() == 0) {
+    if(!scroller().getComponent() || !button1().getComponent()
+            || !button2().getComponent()) {
         throw std::runtime_error("Not all components specified for scrollbar.");
     }
 
-    Button* b1 = dynamic_cast<Button*> (button1().getComponent());
+    Button* b1 = dynamic_cast<Button*> (button1().getComponent().get());
     if(!b1)
         throw std::runtime_error("Button1 of ScrollBar not a button.");
     b1->pressed.connect(std::bind(&ScrollBar::buttonPressed, this, _1));
     b1->released.connect(std::bind(&ScrollBar::buttonReleased, this, _1));
-    Button* b2 = dynamic_cast<Button*> (button2().getComponent());
+    Button* b2 = dynamic_cast<Button*> (button2().getComponent().get());
     if(!b2)
         throw std::runtime_error("Button2 of ScrollBar not a button.");
     b2->pressed.connect(std::bind(&ScrollBar::buttonPressed, this, _1));
@@ -256,7 +256,7 @@ ScrollBar::setValue(float value)
 void
 ScrollBar::buttonPressed(Button* button)
 {
-    if(button == button1().getComponent()) {
+    if(static_cast<Component*>(button) == button1().getComponent().get()) {
         scrollspeed = -SCROLLSPEED;
     } else {
         scrollspeed = SCROLLSPEED;

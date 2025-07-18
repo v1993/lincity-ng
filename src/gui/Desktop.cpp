@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <stdexcept>            // for runtime_error
 #include <string>               // for char_traits, basic_string, operator<<
 
-#include "Child.hpp"            // for Childs, Child
+#include "Child.hpp"            // for Child
 #include "ComponentLoader.hpp"  // for createComponent
 #include "Style.hpp"            // for parseStyleDef
 #include "XmlReader.hpp"        // for XmlReader
@@ -104,8 +104,7 @@ Desktop::draw(Painter& painter)
 bool
 Desktop::opaque(const Vector2& pos) const
 {
-    for(Childs::const_iterator i = childs.begin(); i != childs.end(); ++i) {
-        const Child& child = *i;
+    for(auto& child: childs) {
         if(!child.getComponent() || !child.isEnabled())
             continue;
 
@@ -120,8 +119,8 @@ Desktop::opaque(const Vector2& pos) const
 void
 Desktop::resize(float width, float height)
 {
-    for(Childs::iterator i = childs.begin(); i != childs.end(); ++i) {
-        Component* component = i->getComponent();
+    for(auto& child: childs) {
+        auto& component = child.getComponent();
         if(component->getFlags() & FLAG_RESIZABLE)
             component->resize(width, height);
 #ifdef DEBUG
@@ -141,18 +140,13 @@ Vector2
 Desktop::getPos(Component* component)
 {
     // find child
-    Child* child = 0;
-    for(Childs::iterator i = childs.begin(); i != childs.end(); ++i) {
-        if(i->getComponent() == component) {
-            child = &(*i);
-            break;
+    for(auto& child: childs) {
+        if(child.getComponent().get() == component) {
+            return child.getPos();
         }
     }
-    if(child == 0)
-        throw std::runtime_error(
-                "Trying to getPos a component that is not a direct child");
-
-    return child->getPos();
+    throw std::runtime_error(
+            "Trying to getPos a component that is not a direct child");
 }
 
 void

@@ -39,7 +39,7 @@
 #include "UserOperation.hpp"                // for UserOperation
 #include "Util.hpp"                         // for getCheckButton
 #include "gui/CheckButton.hpp"              // for CheckButton
-#include "gui/Child.hpp"                    // for Childs, Child
+#include "gui/Child.hpp"                    // for Child
 #include "gui/ComponentFactory.hpp"         // for IMPLEMENT_COMPONENT_FACTORY
 #include "gui/ComponentLoader.hpp"          // for loadGUIFile, parseEmbedde...
 #include "gui/Image.hpp"                    // for Image
@@ -497,15 +497,15 @@ void ButtonPanel::Menu::setActiveTool(Tool *tool) {
   if(activeTool == tool)
     return;
   activeTool = tool;
-  dynamic_cast<Image *>(button->getCaption())->setFile(
-    dynamic_cast<Image *>(tool->button->getCaption())->getFilename());
+  dynamic_cast<Image *>(button->getCaption().get())->setFile(
+    dynamic_cast<Image *>(tool->button->getCaption().get())->getFilename());
   button->enable(tool->button->isEnabled());
 }
 
 bool ButtonPanel::opaque(const Vector2& pos) const
 {
-    for(Childs::const_iterator i = childs.begin(); i != childs.end(); ++i) {
-        if(i->getComponent()->opaque(pos))
+    for(auto& child: childs) {
+        if(child.getComponent()->opaque(pos))
             return true;
     }
     return false;

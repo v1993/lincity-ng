@@ -74,7 +74,7 @@ ScrollView::parse(XmlReader& reader)
     }
 
     // we need 2 child components
-    childs.assign(2, Child());
+    childs.resize(2);
 
     // parse xml contents
     int depth = reader.getDepth();
@@ -94,10 +94,10 @@ ScrollView::parse(XmlReader& reader)
         }
     }
 
-    if(scrollBar().getComponent() == 0) {
+    if(!scrollBar().getComponent()) {
         throw std::runtime_error("No ScrollBar specified in ScrollView");
     }
-    ScrollBar* scrollBarComponent = (ScrollBar*) scrollBar().getComponent();
+    ScrollBar* scrollBarComponent = (ScrollBar*) scrollBar().getComponent().get();
     scrollBarComponent->valueChanged.connect(
       std::bind(&ScrollView::scrollBarChanged, this, _1, _2));
 
@@ -118,8 +118,8 @@ ScrollView::resize(float newwidth, float newheight)
         newheight = scrollBar().getComponent()->getHeight();
 
     float scrollarea = 0;
-    if(contents().getComponent() != 0) {
-        Component* component = contents().getComponent();
+    if(contents().getComponent()) {
+        auto& component = contents().getComponent();
         if(component->getFlags() & FLAG_RESIZABLE)
             component->resize(newwidth - scrollBarWidth, newheight);
         contents().setClipRect(
@@ -129,7 +129,7 @@ ScrollView::resize(float newwidth, float newheight)
             scrollarea = 0;
     }
 
-    ScrollBar* scrollBarComponent = (ScrollBar*) scrollBar().getComponent();
+    ScrollBar* scrollBarComponent = (ScrollBar*) scrollBar().getComponent().get();
     scrollBarComponent->setRange(0, scrollarea);
     scrollBarComponent->setValue(0);
 
@@ -154,7 +154,7 @@ ScrollView::event(const Event& event)
             return;
 
         ScrollBar* scrollBarComp
-            = dynamic_cast<ScrollBar*> (scrollBar().getComponent());
+            = dynamic_cast<ScrollBar*> (scrollBar().getComponent().get());
         if(scrollBarComp == 0) {
 #ifdef DEBUG
             assert(false);

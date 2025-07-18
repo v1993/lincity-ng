@@ -115,7 +115,7 @@ Window::parse(XmlReader& reader)
     if(width <= 0 || height <= 0)
         throw std::runtime_error("Width or Height invalid");
 
-    childs.assign(5, Child());
+    childs.resize(5);
 
     int depth = reader.getDepth();
     while(reader.read() && reader.getDepth() > depth) {
@@ -144,8 +144,8 @@ Window::parse(XmlReader& reader)
     Component::resize(getSize());
 
     // connect signals...
-    if(closeButton().getComponent() != 0) {
-      Button* button = (Button*) closeButton().getComponent();
+    if(closeButton().getComponent()) {
+      Button* button = (Button*) closeButton().getComponent().get();
       button->clicked.connect(std::bind(&Window::closeButtonClicked, this, _1));
     }
 }
@@ -185,7 +185,7 @@ Window::resize(float width, float height) {
   float closeButtonHeight = 0;
   float closeButtonWidth = 0;
   float closeButtonBorder = 0;
-  if(closeButton().getComponent() != 0) {
+  if(closeButton().getComponent()) {
       closeButtonHeight = closeButton().getComponent()->getHeight();
       if(titlesize < closeButtonHeight) {
           titlesize = closeButtonHeight;
@@ -209,7 +209,7 @@ Window::resize(float width, float height) {
     goto retry;
   }
 
-  if(title_background().getComponent() != 0) {
+  if(title_background().getComponent()) {
     title_background().setPos(title().getPos());
     targetSize = Vector2(compSize.x - closeButtonWidth, titlesize);
     title_background().getComponent()->resize(targetSize);
@@ -220,7 +220,7 @@ Window::resize(float width, float height) {
     }
   }
 
-  if(closeButton().getComponent() != 0) {
+  if(closeButton().getComponent()) {
     closeButton().setPos(Vector2(
       border + compSize.x - closeButtonWidth + closeButtonBorder,
       border + closeButtonBorder));
@@ -239,7 +239,7 @@ Window::resize(float width, float height) {
   contents().setClipRect(
     Rect2D(Vector2(),targetSize).move(contents().getPos()));
 
-  if(background().getComponent() != 0) {
+  if(background().getComponent()) {
     background().setPos(Vector2(0, 0));
     targetSize = size;
     background().getComponent()->resize(targetSize);

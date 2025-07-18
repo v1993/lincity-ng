@@ -73,9 +73,8 @@ WindowManager::resize(float width, float height) {
   if(width < 0) width = 0;
   if(height < 0) height = 0;
   size = Vector2(width, height);
-  for(Childs::iterator i = childs.begin(); i != childs.end(); ++i) {
-    Child &child = *i;
-    Window *window = static_cast<Window *>(child.getComponent());
+  for(auto& child: childs) {
+    Window *window = static_cast<Window *>(child.getComponent().get());
     Vector2 childPos = child.getPos();
     child.setPos(childPos.constrain(Rect2D(Vector2(), size - window->size)));
     window->size.constrain(Rect2D(Vector2(), size));
@@ -106,9 +105,8 @@ WindowManager::event(const Event& event) {
     dragging = false;
   }
 
-  for(Childs::reverse_iterator i = childs.rbegin(); i != childs.rend(); ++i) {
-    Child &child = *i;
-    Window *window = static_cast<Window *>(child.getComponent());
+  for(auto& child: childs) {
+    Window *window = static_cast<Window *>(child.getComponent().get());
     Vector2 mousepos = event.mousepos - child.getPos();
 
     if(!child.isEnabled())
@@ -225,8 +223,7 @@ WindowManager::opaque(const Vector2& pos) const {
   if(dragging)
     return true;
 
-  for(Childs::const_iterator i = childs.begin(); i != childs.end(); ++i) {
-    const Child& child = *i;
+  for(auto& child: childs) {
     if(!child.getComponent() || !child.isEnabled())
       continue;
 
@@ -255,7 +252,7 @@ WindowManager::removeWindow(Window *window) {
 
 WindowManager::Edge
 WindowManager::edgeAt(const Child &child, Vector2 pos) const {
-  Window *window = static_cast<Window *>(child.getComponent());
+  Window *window = static_cast<Window *>(child.getComponent().get());
   const Vector2 size = window->getSize();
   pos -= child.getPos();
 
@@ -287,8 +284,8 @@ WindowManager::addWindowInternal(Window *window) {
 void
 WindowManager::removeWindowInternal(Window *window) {
   // find child
-  for(Childs::iterator i = childs.begin(); i != childs.end(); ++i) {
-    if(i->getComponent() == window) {
+  for(auto i = childs.begin(); i != childs.end(); ++i) {
+    if(i->getComponent().get() == window) {
       childs.erase(i);
       return;
     }

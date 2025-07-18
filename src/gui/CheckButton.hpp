@@ -21,9 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <SDL.h>              // for Uint32
 #include <string>             // for string, basic_string
+#include <memory>
 #include <vector>             // for vector
 
-#include "gui/Child.hpp"      // for Childs
+#include "gui/Child.hpp"      // for Child
 #include "gui/Component.hpp"  // for Component
 #include "gui/Signal.hpp"     // for Signal
 #include "gui/Vector2.hpp"    // for Vector2
@@ -53,7 +54,7 @@ public:
 
     void setCaptionText(const std::string &pText);
     std::string getCaptionText();
-    Component *getCaption();
+    std::unique_ptr<Component>& getCaption();
 
     const std::string& getTooltip() const;
     void setTooltip(const std::string &pText);

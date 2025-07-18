@@ -43,14 +43,12 @@
 WindowManager *DialogBuilder::defaultWm = NULL;
 
 DialogBuilder::DialogBuilder() :
-  _image(NULL), _windowManager(NULL)
+  _windowManager(NULL)
 {
-  _message = new Document();
+  _message = std::make_unique<Document>();
 }
 
 DialogBuilder::~DialogBuilder() {
-  delete _message;
-  delete _image;
 }
 
 DialogBuilder&
@@ -81,8 +79,8 @@ DialogBuilder::messageAddTextBold(const std::string& content) {
 }
 
 DialogBuilder&
-DialogBuilder::image(Image *image) {
-  _image = image;
+DialogBuilder::image(std::unique_ptr<Image>&& image) {
+  _image = std::move(image);
 
   return *this;
 }
@@ -90,7 +88,7 @@ DialogBuilder::image(Image *image) {
 DialogBuilder&
 DialogBuilder::imageFile(const std::string& image) {
   if(!_image) {
-    _image = new Image();
+    _image = std::make_unique<Image>();
   }
   _image->setFile(image);
 
@@ -144,12 +142,10 @@ DialogBuilder::build() {
 
   title->setText(_titleText);
 
-  messageChild->setComponent(_message);
-  _message = NULL;
+  messageChild->setComponent(std::move(_message));
 
   if(_image) {
-    imageChild->setComponent(_image);
-    _image = NULL;
+    imageChild->setComponent(std::move(_image));
   }
 
   if(!_windowManager)

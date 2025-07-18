@@ -27,13 +27,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Event.hpp"
 
 Child::Child(Component* _component)
-    : useClipRect(false), component(_component)
+    : component{_component}
 {
-    enabled = component != 0;
+    enabled = component != nullptr;
 }
 
-Child::~Child()
+Child::Child(std::unique_ptr<Component>&& _component)
+  : component{std::move(_component)}
 {
+  enabled = component != nullptr;
 }
 
 bool
@@ -73,39 +75,10 @@ Child::enable(bool enabled) {
 }
 
 void
-Child::setComponent(Component* component)
+Child::setComponent(std::unique_ptr<Component>&& component)
 {
-    delete this->component;
-    this->component = component;
-    enabled = component != 0;
+    this->component = std::move(component);
+    enabled = component != nullptr;
 }
-
-//---------------------------------------------------------------------------
-
-Childs::Childs()
-{
-}
-
-Childs::~Childs()
-{
-    for(iterator i = begin(); i != end(); ++i)
-        delete i->component;
-}
-
-Childs::iterator
-Childs::erase(Childs::iterator i)
-{
-    delete i->component;
-    return std::vector<Child>::erase(i);
-}
-
-void
-Childs::clear()
-{
-    for(iterator i = begin(); i != end(); ++i)
-        delete i->component;
-    std::vector<Child>::clear();
-}
-
 
 /** @file gui/Child.cpp */

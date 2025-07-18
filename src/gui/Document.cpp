@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <memory>                // for unique_ptr
 #include <vector>                // for vector
 
-#include "Child.hpp"             // for Childs, Child
+#include "Child.hpp"             // for Child
 #include "Color.hpp"             // for Color
 #include "ComponentFactory.hpp"  // for IMPLEMENT_COMPONENT_FACTORY
 #include "DocumentElement.hpp"   // for DocumentElement
@@ -109,10 +109,9 @@ void
 Document::resize(float newwidth, float newheight)
 {
     height = 0;
-    for(Childs::iterator i = childs.begin(); i != childs.end(); ++i) {
-        Child& child = *i;
-        Component* component = child.getComponent();
-        DocumentElement* element = dynamic_cast<DocumentElement*> (component);
+    for(auto& child: childs) {
+        auto& component = child.getComponent();
+        DocumentElement* element = dynamic_cast<DocumentElement*> (component.get());
         if(!element) {
             std::cerr << "Component not a DocumentElement in Document::resize!\n";
             continue;

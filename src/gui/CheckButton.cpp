@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <sstream>                   // for basic_stringstream
 #include <stdexcept>                 // for runtime_error
 
-#include "Child.hpp"                 // for Child, Childs
+#include "Child.hpp"                 // for Child
 #include "Component.hpp"             // for Component, Component::FLAG_RESIZ...
 #include "Signal.hpp"                // for Signal
 #include "Vector2.hpp"               // for Vector2
@@ -104,7 +104,7 @@ CheckButton::parse(XmlReader& reader)
     }
 
     // we need 6 child components
-    childs.assign(6, Child());
+    childs.resize(6);
 
     // parse contents of the xml-element
     bool parseTooltip = false;
@@ -113,52 +113,52 @@ CheckButton::parse(XmlReader& reader)
         if(reader.getNodeType() == XML_READER_TYPE_ELEMENT) {
             std::string element = (const char*) reader.getName();
             if(element == "image") {
-                if(comp_normal().getComponent() != 0)
+                if(comp_normal().getComponent())
                     std::cerr << "Warning: more than 1 component for state "
                         "comp_normal defined.\n";
                 setChildImage(comp_normal(), reader);
             } else if(element == "text") {
-                if(comp_normal().getComponent() != 0)
+                if(comp_normal().getComponent())
                     std::cerr << "Warning: more than 1 component for state "
                         "comp_normal defined.\n";
                 setChildText(comp_normal(), reader);
             } else if(element == "image-hover") {
-                if(comp_hover().getComponent() != 0)
+                if(comp_hover().getComponent())
                     std::cerr << "Warning: more than 1 component for state "
                         "comp_hover defined.\n";
                 setChildImage(comp_hover(), reader);
             } else if(element == "image-checked") {
-                if(comp_checked().getComponent() != 0)
+                if(comp_checked().getComponent())
                     std::cerr << "Warning: more than 1 component for state "
                         "comp_hover defined.\n";
                 setChildImage(comp_checked(), reader);
             } else if(element == "text-hover") {
-                if(comp_hover().getComponent() != 0)
+                if(comp_hover().getComponent())
                     std::cerr << "Warning: more than 1 component for state "
                         "comp_hover defined.\n";
                 setChildText(comp_hover(), reader);
             } else if(element == "image-clicked") {
-                if(comp_clicked().getComponent() != 0)
+                if(comp_clicked().getComponent())
                     std::cerr << "Warning: more than 1 component for state "
                         "comp_clicked defined.\n";
                 setChildImage(comp_clicked(), reader);
             } else if(element == "text-clicked") {
-                if(comp_clicked().getComponent() != 0)
+                if(comp_clicked().getComponent())
                     std::cerr << "Warning: more than 1 component for state "
                         "comp_clicked defined.\n";
                 setChildText(comp_clicked(), reader);
             } else if(element == "image-caption") {
-                if(comp_caption().getComponent() != 0)
+                if(comp_caption().getComponent())
                     std::cerr << "Warning: more than 1 component for comp_caption "
                         "defined.\n";
                 setChildImage(comp_caption(), reader);
             } else if(element == "image-disabled") {
-                if(comp_disabled().getComponent() != 0)
+                if(comp_disabled().getComponent())
                     std::cerr << "Warning: More than 1 component for "
                         "comp_disabled defined.\n";
                 setChildImage(comp_disabled(), reader);
             } else if(element == "text-caption") {
-                if(comp_caption().getComponent() != 0)
+                if(comp_caption().getComponent())
                     std::cerr << "Warning: more than 1 component for comp_caption "
                         "defined.\n";
                 setChildText(comp_caption(), reader);
@@ -196,13 +196,13 @@ CheckButton::parse(XmlReader& reader)
         }
     }
 
-    if(comp_normal().getComponent() == 0)
+    if(!comp_normal().getComponent())
         throw std::runtime_error("No component for state comp_normal defined.");
 
     // if no width/height was specified we use the one from the biggest image
     if(width <= 0 || height <= 0) {
-        for(Childs::iterator i = childs.begin(); i != childs.end(); ++i) {
-            Component* component = i->getComponent();
+        for(auto& child: childs) {
+            auto& component = child.getComponent();
             if(!component)
                 continue;
             if(component->getFlags() & FLAG_RESIZABLE)
@@ -216,11 +216,10 @@ CheckButton::parse(XmlReader& reader)
     }
 
     // place components at the middle of the button
-    for(Childs::iterator i = childs.begin(); i != childs.end(); ++i) {
-        Child& child = *i;
+    for(auto& child: childs) {
         if(!child.getComponent())
             continue;
-        Component* component = child.getComponent();
+        auto& component = child.getComponent();
 
         child.setPos( Vector2 ((width - component->getWidth())/2,
                                (height - component->getHeight())/2));
@@ -400,7 +399,7 @@ CheckButton::draw(Painter& painter) {
     painter.popTransform();
 }
 
-Component *CheckButton::getCaption()
+std::unique_ptr<Component>& CheckButton::getCaption()
 {
   return comp_caption().getComponent();
 }
@@ -408,10 +407,10 @@ Component *CheckButton::getCaption()
 void CheckButton::setCaptionText(const std::string &pText)
 {
   Child &c=comp_caption();
-  Component *cm=c.getComponent();
+  auto& cm=c.getComponent();
   if(cm)
   {
-    Paragraph *p=dynamic_cast<Paragraph*>(cm);
+    Paragraph *p=dynamic_cast<Paragraph*>(cm.get());
     if(p)
       p->setText(pText);
   }
@@ -431,10 +430,10 @@ std::string CheckButton::getCaptionText()
 {
   std::string s;
   Child &c=comp_caption();
-  Component *cm=c.getComponent();
+  auto& cm=c.getComponent();
   if(cm)
   {
-    Paragraph *p=dynamic_cast<Paragraph*>(cm);
+    Paragraph *p=dynamic_cast<Paragraph*>(cm.get());
     if(p)
       s=p->getText();
   }

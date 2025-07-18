@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <stdexcept>             // for runtime_error
 #include <string>                // for operator==, basic_string, operator<<
 
-#include "Child.hpp"             // for Childs, Child
+#include "Child.hpp"             // for Child
 #include "Color.hpp"             // for Color
 #include "ComponentFactory.hpp"  // for IMPLEMENT_COMPONENT_FACTORY
 #include "ComponentLoader.hpp"   // for parseEmbeddedComponent
@@ -224,9 +224,8 @@ TableLayout::parse(XmlReader& reader)
 bool
 TableLayout::opaque(const Vector2& pos) const
 {
-    for(Childs::const_iterator i = childs.begin(); i != childs.end(); ++i) {
-        const Child& child = *i;
-        if(child.getComponent() == 0 || !child.isEnabled())
+    for(auto& child: childs) {
+        if(!child.getComponent() || !child.isEnabled())
             continue;
 
         if(child.getComponent()->opaque(pos - child.getPos())) {
@@ -356,7 +355,7 @@ TableLayout::resize(float width, float height)
                 continue;
             }
             Child& child = childs[childid];
-            Component* component = child.getComponent();
+            auto& component = child.getComponent();
 
             if(!component) {
                 p.x += col->realval;

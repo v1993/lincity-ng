@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef __CHILD_HPP__
 #define __CHILD_HPP__
 
+#include <memory>
+#include <optional>
 #include <vector>       // for vector
 
 #include "Rect2D.hpp"   // for Rect2D
@@ -37,14 +39,28 @@ class Component;
 class Child
 {
 public:
-    Child(Component* _component = 0);
-    ~Child();
+    Child() {};
+    // TODO: remove entirely
+    explicit Child(Component* _component);
+    explicit Child(std::unique_ptr<Component>&& _component);
+    ~Child() = default;
 
-    Component* getComponent() const
+    Child(const Child&) = delete;
+    Child& operator=(const Child&) = delete;
+    Child(Child&&) = default;
+    Child& operator=(Child&&) = default;
+
+    const std::unique_ptr<Component>& getComponent() const
     {
         return component;
     }
-    void setComponent(Component* component);
+
+    std::unique_ptr<Component>& getComponent()
+    {
+        return component;
+    }
+
+    void setComponent(std::unique_ptr<Component>&& component);
 
     void enable(bool enabled);
 
@@ -65,38 +81,20 @@ public:
 
     bool inside(const Vector2& pos) const;
 
-    void setClipRect(const Rect2D& rect)
+    void setClipRect(const std::optional<Rect2D>& rect)
     {
-        useClipRect = true;
         clipRect = rect;
     }
 
+    const std::optional<Rect2D>& getClipRect() {
+        return clipRect;
+    }
+
 private:
-    friend class Component;
-    friend class Childs;
-
     Vector2 position;
-    bool enabled;
-    bool useClipRect;
-    Rect2D clipRect;
-    Component* component;
-};
-
-/**
- * @class Childs
- * I create an own Child vector class here. So that components can get deleted
- * when they are removed from the vector.
- * (This can't be done in the Child destructor, because making Child the owner
- * of a component, makes big trouble when implementing copy constructors)
- */
-class Childs : public std::vector<Child>
-{
-public:
-    Childs();
-    ~Childs();
-
-    iterator erase(iterator i);
-    void clear();
+    bool enabled = false;
+    std::optional<Rect2D> clipRect;
+    std::unique_ptr<Component> component;
 };
 
 #endif

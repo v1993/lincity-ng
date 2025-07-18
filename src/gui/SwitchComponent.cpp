@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <iostream>              // for operator<<, basic_ostream, basic_ios
 #include <vector>                // for vector
 
-#include "Child.hpp"             // for Childs, Child
+#include "Child.hpp"             // for Child
 #include "ComponentFactory.hpp"  // for IMPLEMENT_COMPONENT_FACTORY
 #include "ComponentLoader.hpp"   // for createComponent
 #include "Vector2.hpp"           // for Vector2
@@ -95,11 +95,10 @@ SwitchComponent::resize(float width, float height)
 {
     if(width < 0) width = 0;
     if(height < 0) height = 0;
-    for(Childs::iterator i = childs.begin(); i != childs.end(); ++i) {
-        Child& child = *i;
-        if(child.getComponent() == 0) {
+    for(auto& child: childs) {
+        if(!child.getComponent()) {
 #ifdef DEBUG
-            std::cerr << "Child in SwitchComponent==0 ?!?\n";
+            std::cerr << "Child in SwitchComponent==nullptr ?!?\n";
 #endif
             continue;
         }
@@ -122,8 +121,7 @@ void
 SwitchComponent::switchComponent(const std::string& name)
 {
     bool found = false;
-    for(Childs::iterator i = childs.begin(); i != childs.end(); ++i) {
-        Child& child = *i;
+    for(auto& child: childs) {
         if(child.getComponent()->getName() == name) {
             child.enable(true);
             found = true;
@@ -152,13 +150,12 @@ SwitchComponent::switchComponent(const std::string& name)
 Component*
 SwitchComponent::getActiveComponent()
 {
-    for(Childs::iterator i = childs.begin(); i != childs.end(); ++i) {
-        Child& child = *i;
+    for(auto& child: childs) {
         if(child.isEnabled())
-            return child.getComponent();
+            return child.getComponent().get();
     }
 
-    return 0;
+    return nullptr;
 }
 
 /**
@@ -172,9 +169,8 @@ SwitchComponent::getActiveComponent()
 bool
 SwitchComponent::opaque(const Vector2& pos) const
 {
-    for(Childs::const_iterator i = childs.begin(); i != childs.end(); ++i) {
-        const Child& child = *i;
-        if(child.getComponent() == 0 || !child.isEnabled())
+    for(auto& child: childs) {
+        if(!child.getComponent() || !child.isEnabled())
             continue;
 
         if(child.getComponent()->opaque(pos - child.getPos()))

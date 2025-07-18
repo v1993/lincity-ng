@@ -56,20 +56,23 @@ Component::parseAttribute(const char* attribute, const char* value)
 void
 Component::drawChild(Child& child, Painter& painter)
 {
-    assert(child.getComponent() != 0);
+    assert(child.getComponent());
 
-    if(child.useClipRect) {
-        painter.pushClipRect(child.clipRect);
+    auto child_position = child.getPos();
+    auto child_rect = child.getClipRect();
+
+    if(child_rect) {
+        painter.pushClipRect(*child_rect);
     }
-    if(child.position != Vector2(0, 0)) {
+    if(child_position != Vector2(0, 0)) {
         painter.pushTransform();
-        painter.translate(child.position);
+        painter.translate(child_position);
     }
-    child.component->draw(painter);
-    if(child.position != Vector2(0, 0)) {
+    child.getComponent()->draw(painter);
+    if(child_position != Vector2(0, 0)) {
         painter.popTransform();
     }
-    if(child.useClipRect) {
+    if(child_rect) {
         painter.popClipRect();
     }
 }
@@ -77,9 +80,8 @@ Component::drawChild(Child& child, Painter& painter)
 void
 Component::draw(Painter& painter)
 {
-    for(Childs::iterator i = childs.begin(); i != childs.end(); ++i) {
-        Child& child = *i;
-        if(child.enabled)
+    for(auto& child: childs) {
+        if(child.isEnabled())
             drawChild(child, painter);
     }
 }
@@ -87,30 +89,29 @@ Component::draw(Painter& painter)
 bool
 Component::eventChild(Child& child, const Event& event, bool visible)
 {
-    assert(child.getComponent() != 0);
+    assert(child.getComponent());
 
     Event ev = event;
     if(event.type == Event::MOUSEMOTION
         || event.type == Event::MOUSEBUTTONDOWN
         || event.type == Event::MOUSEBUTTONUP
         || event.type == Event::MOUSEWHEEL) {
-        ev.mousepos -= child.position;
-        if(visible && child.component->opaque(ev.mousepos))
+        ev.mousepos -= child.getPos();
+        if(visible && child.getComponent()->opaque(ev.mousepos))
             ev.inside = true;
         else
             ev.inside = false;
     }
 
-    child.component->event(ev);
+    child.getComponent()->event(ev);
     return ev.inside;
 }
 
 void
 Component::event(const Event& event) {
     bool visible = event.inside;
-    for(Childs::reverse_iterator i = childs.rbegin(); i != childs.rend(); ++i) {
-        Child& child = *i;
-        if(!child.enabled)
+    for(auto& child: childs) {
+        if(!child.isEnabled())
           continue;
 
         if(eventChild(child, event, visible))
@@ -132,10 +133,9 @@ Component::findComponent(const std::string& name)
     if(getName() == name)
         return this;
 
-    for(Childs::const_iterator i = childs.begin(); i != childs.end(); ++i) {
-        const Child& child = *i;
+    for(auto& child: childs) {
         if (child.getComponent()) {
-            Component* component = child.component->findComponent(name);
+            Component* component = child.getComponent()->findComponent(name);
             if(component)
                 return component;
         }
@@ -149,7 +149,7 @@ Component::getParentChild() const {
   Component *p = getParent();
   if(!p) return NULL;
   for(Child& pc : p->childs)
-    if(pc.getComponent() == this)
+    if(pc.getComponent().get() == this)
       return &pc;
   assert(false); // we must be a child of our parent
   return NULL;
@@ -168,9 +168,9 @@ Component::relative2Global(const Vector2& pos)
 Child&
 Component::addChild(Component* component)
 {
-    assert(component->parent == 0);
+    assert(component->parent == nullptr);
 
-    childs.push_back(Child(component));
+    childs.emplace_back(component);
     component->parent = this;
     component->desktop = this->desktop;
     component->setDirty();
@@ -180,15 +180,12 @@ Component::addChild(Component* component)
 void
 Component::resetChild(Child& child, Component* component)
 {
-    assert(child.component != component);
-
-    delete child.component;
-    child.component = component;
-    if(component != 0) {
+    child.setComponent(std::unique_ptr<Component>{component});
+    if(component != nullptr) {
         component->parent = this;
         component->desktop = this->desktop;
         component->setDirty();
-        child.enabled = true;
+        child.enable(true);
     }
 }
 
@@ -207,9 +204,8 @@ Component::setDirty(const Rect2D& rect)
 Child&
 Component::findChild(Component* component)
 {
-    for(Childs::iterator i = childs.begin(); i != childs.end(); ++i) {
-        Child& child = *i;
-        if(child.getComponent() == component)
+    for(auto& child: childs) {
+        if(child.getComponent().get() == component)
             return child;
     }
     throw std::runtime_error("Child not found");
@@ -218,14 +214,13 @@ Component::findChild(Component* component)
 void
 Component::setChildDirty(Component* childComponent, const Rect2D& area)
 {
-    for(Childs::const_iterator i = childs.begin(); i != childs.end(); ++i) {
-        const Child& child = *i;
-        if(child.getComponent() != childComponent)
+    for(auto& child: childs) {
+        if(child.getComponent().get() != childComponent)
             continue;
-        if(!child.enabled)
+        if(!child.isEnabled())
             return;
         Rect2D rect = area;
-        rect.move(child.position);
+        rect.move(child.getPos());
         setDirty(rect);
         return;
     }

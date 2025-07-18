@@ -82,7 +82,7 @@ Button::parse(XmlReader& reader)
     }
 
     // we need 4 child components
-    childs.assign(4, Child());
+    childs.resize(4);
 
     // parse contents of the xml-element
     bool parseTooltip = false;
@@ -93,17 +93,17 @@ Button::parse(XmlReader& reader)
         if(reader.getNodeType() == XML_READER_TYPE_ELEMENT) {
             std::string element = (const char*) reader.getName();
             if(element == "image") {
-                if(comp_normal().getComponent() != 0)
+                if(comp_normal().getComponent())
                     std::cerr << "Warning: more than 1 component for state "
                         "comp_normal defined.\n";
                 setChildImage(comp_normal(), reader);
             } else if(element == "text") {
-                if(comp_normal().getComponent() != 0)
+                if(comp_normal().getComponent())
                     std::cerr << "Warning: more than 1 component for state "
                         "comp_normal defined.\n";
                 setChildText(comp_normal(), reader);
             } else if(element == "image-hover") {
-                if(comp_hover().getComponent() != 0)
+                if(comp_hover().getComponent())
                     std::cerr << "Warning: more than 1 component for state "
                         "comp_hover defined.\n";
                 setChildImage(comp_hover(), reader);
@@ -113,22 +113,22 @@ Button::parse(XmlReader& reader)
                         "comp_hover defined.\n";
                 setChildText(comp_hover(), reader);
             } else if(element == "image-clicked") {
-                if(comp_clicked().getComponent() != 0)
+                if(comp_clicked().getComponent())
                     std::cerr << "Warning: more than 1 component for state "
                         "comp_clicked defined.\n";
                 setChildImage(comp_clicked(), reader);
             } else if(element == "text-clicked") {
-                if(comp_clicked().getComponent() != 0)
+                if(comp_clicked().getComponent())
                     std::cerr << "Warning: more than 1 component for state "
                         "comp_clicked defined.\n";
                 setChildText(comp_clicked(), reader);
             } else if(element == "image-caption") {
-                if(comp_caption().getComponent() != 0)
+                if(comp_caption().getComponent())
                     std::cerr << "Warning: more than 1 component for comp_caption "
                         "defined.\n";
                 setChildImage(comp_caption(), reader);
             } else if(element == "text-caption") {
-                if(comp_caption().getComponent() != 0)
+                if(comp_caption().getComponent())
                     std::cerr << "Warning: more than 1 component for comp_caption "
                         "defined.\n";
                 setChildText(comp_caption(), reader);
@@ -170,7 +170,7 @@ Button::parse(XmlReader& reader)
         tooltip = GUI_TRANSLATE(tooltip);
     }
 
-    if(comp_normal().getComponent() == 0)
+    if(!comp_normal().getComponent())
         throw std::runtime_error("No component for state comp_normal defined.");
 
     reLayout();
@@ -183,8 +183,8 @@ Button::reLayout()
     if(fixWidth <= 0 || fixHeight <= 0) {
         width = 0;
         height = 0;
-        for(Childs::iterator i = childs.begin(); i != childs.end(); ++i) {
-            Component* component = i->getComponent();
+        for(auto& child: childs) {
+            auto& component = child.getComponent();
             if(!component)
                 continue;
             if(component->getFlags() & FLAG_RESIZABLE)
@@ -196,8 +196,8 @@ Button::reLayout()
                 height = component->getHeight();
         }
     } else {
-        for(Childs::iterator i = childs.begin(); i != childs.end(); ++i) {
-            Component* component = i->getComponent();
+        for(auto& child: childs) {
+            auto& component = child.getComponent();
             if(!component)
                 continue;
             if(component->getFlags() & FLAG_RESIZABLE)
@@ -208,9 +208,8 @@ Button::reLayout()
     }
 
     // place components at the middle of the button
-    for(Childs::iterator i = childs.begin(); i != childs.end(); ++i) {
-        Child& child = *i;
-        Component* component = child.getComponent();
+    for(auto& child: childs) {
+        auto& component = child.getComponent();
         if(!component)
             continue;
 
@@ -238,20 +237,19 @@ Button::setChildText(Child& child, XmlReader& reader)
 void Button::setCaptionText(const std::string &pText)
 {
     Child &c=comp_caption();
-    Component *cm=c.getComponent();
+    auto& cm=c.getComponent();
     if(cm)
     {
-        Paragraph *p=dynamic_cast<Paragraph*>(cm);
+        Paragraph *p=dynamic_cast<Paragraph*>(cm.get());
         if(p)
             p->setText(pText);
     }
 
     // place components at the middle of the button
-    for(Childs::iterator i = childs.begin(); i != childs.end(); ++i) {
-        Child& child = *i;
+    for(auto& child: childs) {
         if(!child.getComponent())
             continue;
-        Component* component = child.getComponent();
+        auto& component = child.getComponent();
 
         child.setPos( Vector2 ((width - component->getWidth())/2,
                     (height - component->getHeight())/2));
@@ -262,10 +260,10 @@ std::string Button::getCaptionText()
 {
   std::string s;
   Child &c=comp_caption();
-  Component *cm=c.getComponent();
+  auto& cm=c.getComponent();
   if(cm)
   {
-    Paragraph *p=dynamic_cast<Paragraph*>(cm);
+    Paragraph *p=dynamic_cast<Paragraph*>(cm.get());
     if(p)
       s=p->getText();
   }

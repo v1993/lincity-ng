@@ -41,8 +41,8 @@ TooltipManager* tooltipManager = 0;
 
 TooltipManager::TooltipManager()
 {
-    childs.assign(1, Child());
-    if(tooltipManager == 0)
+    childs.resize(1);
+    if(tooltipManager == nullptr)
         tooltipManager = this;
 
     setFlags(FLAG_RESIZABLE);
@@ -51,7 +51,7 @@ TooltipManager::TooltipManager()
 TooltipManager::~TooltipManager()
 {
     if(tooltipManager == this)
-        tooltipManager = 0;
+        tooltipManager = nullptr;
 }
 
 void
@@ -99,9 +99,7 @@ void
 TooltipManager::event(const Event& event)
 {
     if(event.type == Event::MOUSEMOTION) {
-        if(comp_tooltip().getComponent() != 0) {
-            comp_tooltip().setComponent(0);
-        }
+        comp_tooltip().setComponent(nullptr);
     }
 }
 
@@ -133,7 +131,7 @@ TooltipManager::showTooltip(const std::string& text, const Vector2& pos)
     /* Show minimap tooltip above. Hardcoded size corresponding to .xml  */
     if(dest.x > getWidth() - 310)
         dest.y = pos.y - 20 - d->getHeight();
-    comp_tooltip().setComponent(d.release());
+    comp_tooltip().setComponent(std::move(d));
     comp_tooltip().setPos(dest);
 		setDirty();
 }

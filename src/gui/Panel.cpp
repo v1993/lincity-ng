@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>                // for char_traits, allocator, basic_string
 #include <vector>                // for vector
 
-#include "Child.hpp"             // for Childs, Child
+#include "Child.hpp"             // for Child
 #include "ComponentFactory.hpp"  // for IMPLEMENT_COMPONENT_FACTORY
 #include "ComponentLoader.hpp"   // for createComponent
 #include "Painter.hpp"           // for Painter
@@ -151,9 +151,8 @@ Panel::draw(Painter& painter)
 bool
 Panel::opaque(const Vector2& pos) const
 {
-    for(Childs::const_iterator i = childs.begin(); i != childs.end(); ++i) {
-        const Child& child = *i;
-        if(child.getComponent() == 0 || !child.isEnabled())
+    for(auto& child: childs) {
+        if(!child.getComponent() || !child.isEnabled())
             continue;
 
         if(child.getComponent()->opaque(pos - child.getPos()))
@@ -165,8 +164,8 @@ Panel::opaque(const Vector2& pos) const
 
 void
 Panel::resize(float width, float height) {
-  for(Childs::iterator i = childs.begin(); i != childs.end(); ++i) {
-    Component* component = i->getComponent();
+  for(auto& child: childs) {
+    auto& component = child.getComponent();
     if(component->getFlags() & FLAG_RESIZABLE) {
       component->resize(width, height);
     }
