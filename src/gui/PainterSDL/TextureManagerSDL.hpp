@@ -24,8 +24,12 @@
 #define __TEXTUREMANAGERSDL_HPP__
 
 #include <SDL.h>                  // for SDL_Surface
+#include <SDL_opengl.h>
 
 #include "../TextureManager.hpp"  // for TextureManager
+
+typedef void (APIENTRYP PFNGLTEXPARAMETERIPROC) (GLenum target, GLenum pname, GLint param);
+typedef void (APIENTRYP PFNGLBLENDFUNCPROC) (GLenum sfactor, GLenum dfactor);
 
 /**
  * This handles the creation and sharing of textures.
@@ -44,6 +48,9 @@ public:
 
 private:
   SDL_Renderer *renderer;
+  PFNGLGENERATEMIPMAPPROC glGenerateMipmap{nullptr};
+  PFNGLTEXPARAMETERIPROC glTexParameteri{nullptr};
+  PFNGLBLENDFUNCPROC glBlendFunc{nullptr};
 };
 
 #endif

@@ -58,11 +58,11 @@ TextureSDL::setScaleMode(ScaleMode mode) {
     return;
   }
 
-  if(SDL_SetTextureScaleMode(tx, sdlMode)) {
+  /*if(SDL_SetTextureScaleMode(tx, sdlMode)) {
     std::cerr << "warning: failed to set scale mode" << std::endl;
     assert(false);
     return;
-  }
+  }*/
 }
 
 /** @file gui/PainterSDL/TextureSDL.cpp */
