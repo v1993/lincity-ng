@@ -74,7 +74,6 @@ pre-built binary packages:
   for both Linux and Windows are available on GitHub. However, these binaries
   may not work for everyone due to strict library version requirements.
 
-
 ## Loading games from versions prior to 2.13.0
 
 LinCity-NG 2.13.0 comes with a completely new load/save system that is,
@@ -123,3 +122,21 @@ View the project on GitHub: https://github.com/lincity-ng/lincity-ng.
 
 Report bugs and suggest features:
   https://github.com/lincity-ng/lincity-ng/issues.
+
+## License
+
+Copyright (C) 1995-2026 LinCity-NG contributors
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
