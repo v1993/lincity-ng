@@ -23,7 +23,7 @@
 #ifndef __PAINTER_HPP__
 #define __PAINTER_HPP__
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <vector>
 #include <memory>
 

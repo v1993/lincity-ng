@@ -22,7 +22,7 @@
 
 #include "ButtonPanel.hpp"
 
-#include <SDL.h>                          // for SDL_BUTTON_RIGHT, SDL_BUTTO...
+#include <SDL3/SDL.h>                     // for SDL_BUTTON_RIGHT, SDL_BUTTO...
 #include <assert.h>                       // for assert
 #include <fmt/base.h>                     // for println
 #include <fmt/format.h>                   // for format

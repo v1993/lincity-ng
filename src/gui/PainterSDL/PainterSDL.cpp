@@ -22,7 +22,7 @@
 
 #include "PainterSDL.hpp"
 
-#include <SDL.h>           // for SDL_GetError, SDL_SetRenderDrawColor, SDL_...
+#include <SDL3/SDL.h>      // for SDL_GetError, SDL_SetRenderDrawColor, SDL_...
 #include <algorithm>       // for max, min
 #include <cassert>         // for assert
 #include <cmath>           // for lround
@@ -42,7 +42,7 @@
 #endif
 
 #define HANDLE_ERR(SDL_CALL) do { \
-  if(SDL_CALL) \
+  if(!SDL_CALL) \
     throw std::runtime_error(std::string(#SDL_CALL": ") + SDL_GetError()); \
 } while(0)
 
@@ -71,7 +71,7 @@ PainterSDL::drawTexture(const Texture *texture, Vector2 pos) {
     .h = (float)texture->getHeight(),
   };
 
-  HANDLE_ERR(SDL_RenderCopyF(renderer, textureSDL->tx, NULL, &drect));
+  HANDLE_ERR(SDL_RenderTexture(renderer, textureSDL->tx, NULL, &drect));
 }
 
 void
@@ -88,7 +88,7 @@ PainterSDL::drawStretchTexture(const Texture *texture, const Rect2D& rect) {
     .h = rect.getHeight(),
   };
 
-  HANDLE_ERR(SDL_RenderCopyF(renderer, textureSDL->tx, NULL, &drect));
+  HANDLE_ERR(SDL_RenderTexture(renderer, textureSDL->tx, NULL, &drect));
 }
 
 /**
@@ -98,8 +98,9 @@ void
 PainterSDL::fillPolygon(int numberPoints, const Vector2* points) {
   assert(numberPoints >= 3);
 
-  SDL_Color color = (SDL_Color)
-    {.r = fillColor.r, .g = fillColor.g, .b = fillColor.b, .a = fillColor.a};
+  SDL_FColor color = (SDL_FColor)
+    {.r = 1.0f * fillColor.r / 255, .g = 1.0f * fillColor.g / 255,
+     .b = 1.0f * fillColor.b / 255, .a = 1.0f * fillColor.a / 255};
 
   float *xy = new float[numberPoints * 2];
   for(int i = 0; i < numberPoints; i++) {
@@ -136,7 +137,7 @@ PainterSDL::drawPolygon(int numberPoints, const Vector2* points) {
   screenPoints[numberPoints] = screenPoints[0]; // close the polygon
   HANDLE_ERR(SDL_SetRenderDrawColor(renderer,
     lineColor.r, lineColor.g, lineColor.b, lineColor.a));
-  HANDLE_ERR(SDL_RenderDrawLinesF(renderer, screenPoints, numberPoints + 1));
+  HANDLE_ERR(SDL_RenderLines(renderer, screenPoints, numberPoints + 1));
   delete[] screenPoints;
 }
 
@@ -146,7 +147,7 @@ PainterSDL::drawLine(Vector2 pointA, Vector2 pointB) {
   Vector2 screenposB = transform.apply(pointB);
   HANDLE_ERR(SDL_SetRenderDrawColor(renderer,
     lineColor.r, lineColor.g, lineColor.b, lineColor.a));
-  HANDLE_ERR(SDL_RenderDrawLineF(renderer,
+  HANDLE_ERR(SDL_RenderLine(renderer,
     screenposA.x, screenposA.y, screenposB.x, screenposB.y));
 }
 
@@ -161,7 +162,7 @@ PainterSDL::fillRectangle(const Rect2D& rect) {
   };
   HANDLE_ERR(SDL_SetRenderDrawColor(renderer,
     fillColor.r, fillColor.g, fillColor.b, fillColor.a));
-  HANDLE_ERR(SDL_RenderFillRectF(renderer, &screenRect));
+  HANDLE_ERR(SDL_RenderFillRect(renderer, &screenRect));
 }
 
 void
@@ -175,7 +176,7 @@ PainterSDL::drawRectangle(const Rect2D& rect) {
   };
   HANDLE_ERR(SDL_SetRenderDrawColor(renderer,
     lineColor.r, lineColor.g, lineColor.b, lineColor.a));
-  HANDLE_ERR(SDL_RenderDrawRectF(renderer, &screenRect));
+  HANDLE_ERR(SDL_RenderRect(renderer, &screenRect));
 }
 
 void
@@ -244,7 +245,7 @@ PainterSDL::popClipRect() {
 void
 PainterSDL::updateClipRect() {
   if(cliprectStack.back() == CR_NONE) {
-    HANDLE_ERR(SDL_RenderSetClipRect(renderer, NULL));
+    HANDLE_ERR(SDL_SetRenderClipRect(renderer, NULL));
   }
   else {
     SDL_Rect clip = {
@@ -255,7 +256,7 @@ PainterSDL::updateClipRect() {
     };
     clip.w -= clip.x;
     clip.h -= clip.y;
-    HANDLE_ERR(SDL_RenderSetClipRect(renderer, &clip));
+    HANDLE_ERR(SDL_SetRenderClipRect(renderer, &clip));
   }
 }
 
@@ -263,7 +264,7 @@ std::unique_ptr<Texture>
 PainterSDL::createTargetTexture(int width, int height) {
   SDL_Texture *texture = SDL_CreateTexture(renderer,
     SDL_PIXELFORMAT_UNKNOWN, SDL_TEXTUREACCESS_TARGET, width, height);
-  HANDLE_ERR(!texture);
+  HANDLE_ERR(texture);
   HANDLE_ERR(SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND));
   return std::unique_ptr<Texture>(new TextureSDL(texture));
 }
@@ -274,21 +275,24 @@ PainterSDL::pushRenderTarget(Texture *target) {
   assert(t);
   #ifndef NDEBUG
   {
-    int tflags;
-    HANDLE_ERR(SDL_QueryTexture(t->tx, NULL, &tflags, NULL, NULL));
+    ;
+    SDL_PropertiesID props = SDL_GetTextureProperties(t->tx);
+    int tflags = SDL_GetNumberProperty(props, SDL_PROP_TEXTURE_ACCESS_NUMBER, 0);
     assert(tflags == SDL_TEXTUREACCESS_TARGET);
   }
+  /* All renderers support TARGETTEXTURE per SDL3 migration docs
   {
     SDL_RendererInfo rinfo;
     HANDLE_ERR(SDL_GetRendererInfo(renderer, &rinfo));
     assert(rinfo.flags & SDL_RENDERER_TARGETTEXTURE);
   }
+  */
   #endif
   targetStack.push_back(t);
   HANDLE_ERR(SDL_SetRenderTarget(renderer, t->tx));
 
   cliprectStack.push_back(CR_NONE);
-  HANDLE_ERR(SDL_RenderSetClipRect(renderer, NULL));
+  HANDLE_ERR(SDL_SetRenderClipRect(renderer, NULL));
 
   transformStack.push_back(transform);
   transform = Transform();

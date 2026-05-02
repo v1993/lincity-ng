@@ -22,7 +22,7 @@
 
 #include "MiniMap.hpp"
 
-#include <SDL.h>                            // for Uint16, Uint8, SDL_BUTTON...
+#include <SDL3/SDL.h>                       // for Uint16, Uint8, SDL_BUTTON...
 #include <cassert>                          // for assert
 #include <fmt/format.h>                     // for format
 #include <libxml++/parsers/textreader.h>    // for TextReader

@@ -24,8 +24,8 @@
 
 #include <iostream>
 #include <map>
-#include <SDL_mixer.h>      // for Mix_Chunk
-#include <SDL.h>    // for SDL_Surface
+#include <SDL3_mixer/SDL_mixer.h>  // for MIX_Audio
+#include <SDL3/SDL.h>       // for SDL_Surface
 #include <string>           // for string
 #include <vector>           // for vector
 
@@ -87,7 +87,7 @@ public:
     bool images_loaded;
     bool sounds_loaded;
     bool is_vehicle; //vehicles are always rendered on upper left tile
-    std::vector<Mix_Chunk *> chunks;
+    std::vector<MIX_Audio *> chunks;
     std::vector<GraphicsInfo> graphicsInfoVector;
     void growGraphicsInfoVector(void)
     {   graphicsInfoVector.resize(graphicsInfoVector.size() + 1);}

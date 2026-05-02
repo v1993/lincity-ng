@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef __DESKTOP_HPP__
 #define __DESKTOP_HPP__
 
-#include <SDL.h>          // for SDL_Cursor, SDL_SystemCursor
+#include <SDL3/SDL.h>     // for SDL_Cursor, SDL_SystemCursor
 #include <vector>         // for vector
 
 #include "Component.hpp"  // for Component
@@ -72,7 +72,7 @@ private:
 
     SDL_Cursor *cursor;
     Component *cursorOwner;
-    SDL_Cursor *systemCursors[SDL_NUM_SYSTEM_CURSORS] = {0};
+    SDL_Cursor *systemCursors[SDL_SYSTEM_CURSOR_COUNT] = {0};
 };
 
 #endif

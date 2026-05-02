@@ -23,7 +23,7 @@
 #ifndef __PAINTERSDL_HPP__
 #define __PAINTERSDL_HPP__
 
-#include <SDL.h>           // for SDL_Renderer
+#include <SDL3/SDL.h>      // for SDL_Renderer
 #include <cmath>           // for INFINITY
 #include <deque>           // for deque
 #include <vector>          // for vector

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef __CHECK_BUTTON_HPP__
 #define __CHECK_BUTTON_HPP__
 
-#include <SDL.h>              // for Uint32
+#include <SDL3/SDL.h>         // for Uint32
 #include <string>             // for string, basic_string
 
 #include "gui/Child.hpp"      // for Childs

@@ -22,7 +22,7 @@
 #ifndef __MAINMENU_HPP__
 #define __MAINMENU_HPP__
 
-#include <SDL.h>                     // for SDL_Window, Uint32
+#include <SDL3/SDL.h>                // for SDL_Window, Uint32
 #include <filesystem>                // for path
 #include <functional>                // for function
 #include <memory>                    // for unique_ptr

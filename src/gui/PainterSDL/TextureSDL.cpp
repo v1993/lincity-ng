@@ -22,7 +22,7 @@
 
 #include "TextureSDL.hpp"
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <cassert>
 #include <cstddef>
 #include <stdexcept>
@@ -30,8 +30,11 @@
 
 TextureSDL::TextureSDL(SDL_Texture *tx) : tx(tx) {
   assert(tx);
-  if(SDL_QueryTexture(tx, NULL, NULL, &width, &height))
+  float w, h;
+  if( !SDL_GetTextureSize(tx, &w, &h))
     throw std::runtime_error(SDL_GetError());
+  width=w;
+  height=h;
   assert(width && height);
 }
 
@@ -44,13 +47,13 @@ TextureSDL::setScaleMode(ScaleMode mode) {
   SDL_ScaleMode sdlMode;
   switch(mode) {
   case ScaleMode::NEAREST:
-    sdlMode = SDL_ScaleModeNearest;
+    sdlMode = SDL_SCALEMODE_NEAREST;
     break;
   case ScaleMode::LINEAR:
-    sdlMode = SDL_ScaleModeLinear;
+    sdlMode = SDL_SCALEMODE_LINEAR;
     break;
   case ScaleMode::ANISOTROPIC:
-    sdlMode = SDL_ScaleModeBest;
+    sdlMode = SDL_SCALEMODE_LINEAR; // re-use Linear for SDL_ScaleModeBest, per sdl3 migration docs
     break;
   default:
     std::cerr << "warning: scale mode not supported" << std::endl;
@@ -58,7 +61,7 @@ TextureSDL::setScaleMode(ScaleMode mode) {
     return;
   }
 
-  if(SDL_SetTextureScaleMode(tx, sdlMode)) {
+  if(!SDL_SetTextureScaleMode(tx, sdlMode)) {
     std::cerr << "warning: failed to set scale mode" << std::endl;
     assert(false);
     return;

@@ -22,7 +22,7 @@
 
 #include "MainMenu.hpp"
 
-#include <SDL.h>                        // for SDL_EventType, Uint32, SDL_Ge...
+#include <SDL3/SDL.h>                   // for SDL_EventType, Uint32, SDL_Ge...
 #include <stdio.h>                      // for fprintf, size_t, stderr
 #include <algorithm>                    // for min, sort
 #include <array>                        // for array
@@ -514,33 +514,20 @@ void MainMenu::changeResolution(bool next) {
     resolutions.push_back(std::pair<int, int>(1024,768));
     resolutions.push_back(std::pair<int, int>(1280,1024));
 
-    int display = SDL_GetWindowDisplayIndex(window);
-    int nmodes = SDL_GetNumDisplayModes(display);
-    for (int i = -1; i < nmodes; ++i) {
-        SDL_DisplayMode mode;
-        if (i >= 0) {
-            if (SDL_GetDisplayMode(display, i, &mode) < 0) {
-                std::cerr << "Error: SDL failed to get mode " << i << " for display " << display << "!\n";
-                continue;
-            }
-        } else {
-            /* Special case: half the current display size */
-            if (SDL_GetCurrentDisplayMode(display, &mode) < 0) {
-                std::cerr << "Error: SDL failed to get current mode for display " << display << "!\n";
-                continue;
-            }
-            mode.w /= 2;
-            mode.h /= 2;
-        }
+    int display = SDL_GetDisplayForWindow(window);
+    int nmodes;
+    SDL_DisplayMode **modes = SDL_GetFullscreenDisplayModes(display, &nmodes);
+    for (int i = 0; i < nmodes; ++i) {
+        const SDL_DisplayMode *mode = modes[i];
         bool in_list = false;
         for (size_t j = 0; j < resolutions.size(); j++) {
-            if (resolutions[j].first == mode.w && resolutions[j].second == mode.h) {
+            if (resolutions[j].first == mode->w && resolutions[j].second == mode->h) {
                 in_list = true;
                 break;
             }
         }
         if (!in_list) {
-            resolutions.push_back(std::pair<int, int>(mode.w, mode.h));
+            resolutions.push_back(std::pair<int, int>(mode->w, mode->h));
         }
     }
     std::sort(resolutions.begin(), resolutions.end());
@@ -885,49 +872,47 @@ MainMenu::run() {
             if(!status) break; // timed out
 
             switch(event.type) {
-                case SDL_WINDOWEVENT:
-                    if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                        videoSizeChanged(event.window.data1, event.window.data2);
-                        menu->resize(event.window.data1, event.window.data2);
-                        getConfig()->videoX.session = event.window.data1;
-                        getConfig()->videoY.session = event.window.data2;
-                        getConfig()->videoX.sessionToConfig();
-                        getConfig()->videoY.sessionToConfig();
+                case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+                    videoSizeChanged(event.window.data1, event.window.data2);
+                    menu->resize(event.window.data1, event.window.data2);
+                    getConfig()->videoX.session = event.window.data1;
+                    getConfig()->videoY.session = event.window.data2;
+                    getConfig()->videoX.sessionToConfig();
+                    getConfig()->videoY.sessionToConfig();
 
-                        if(menuSwitch->getActiveComponent() == optionsMenu) {
-                            std::stringstream mode;
-                            mode.str("");
-                            if (getConfig()->useFullScreen.get()) {
-                                mode << "fullscreen";
-                            } else {
-                                mode << event.window.data1 << "x" << event.window.data2;
-                            }
-                            getParagraph( *optionsMenu, "resolutionParagraph")->setText(mode.str());
+                    if(menuSwitch->getActiveComponent() == optionsMenu) {
+                        std::stringstream mode;
+                        mode.str("");
+                        if (getConfig()->useFullScreen.get()) {
+                            mode << "fullscreen";
+                        } else {
+                            mode << event.window.data1 << "x" << event.window.data2;
                         }
+                        getParagraph( *optionsMenu, "resolutionParagraph")->setText(mode.str());
                     }
                     break;
-                case SDL_MOUSEMOTION:
-                case SDL_MOUSEBUTTONUP:
-                case SDL_MOUSEBUTTONDOWN:
-                case SDL_MOUSEWHEEL:
-                case SDL_KEYDOWN:{
+                case SDL_EVENT_MOUSE_MOTION:
+                case SDL_EVENT_MOUSE_BUTTON_UP:
+                case SDL_EVENT_MOUSE_BUTTON_DOWN:
+                case SDL_EVENT_MOUSE_WHEEL:
+                case SDL_EVENT_KEY_DOWN:{
                     Event gui_event(event);
                     menu->event(gui_event);
                     break;
                 }
-                case SDL_KEYUP: {
+                case SDL_EVENT_KEY_UP: {
                     Event gui_event(event);
                     //In menu ESC as well as ^c exits the game.
                     //might come in handy if video-mode is not working as expected.
-                    if( ( gui_event.keysym.sym == SDLK_ESCAPE ) ||
-                        ( gui_event.keysym.sym == SDLK_c && ( gui_event.keysym.mod & KMOD_CTRL) ) ){
+                    if( ( gui_event.key == SDLK_ESCAPE ) ||
+                        ( gui_event.key == SDLK_C && ( gui_event.mod & SDL_KMOD_CTRL) ) ){
                         state = State::QUIT;
                         break;
                     }
                     menu->event(gui_event);
                     break;
                 }
-                case SDL_QUIT:
+                case SDL_EVENT_QUIT:
                     state = State::QUIT;
                     break;
                 default:

@@ -22,8 +22,8 @@
 
 #include "GameView.hpp"
 
-#include <SDL.h>                          // for SDL_Scancode, SDL_BUTTON_LEFT
-#include <SDL_image.h>                    // for IMG_Load
+#include <SDL3/SDL.h>                     // for SDL_Scancode, SDL_BUTTON_LEFT
+#include <SDL3_image/SDL_image.h>         // for IMG_Load
 #include <assert.h>                       // for assert
 #include <fmt/base.h>                     // for println
 #include <fmt/format.h>                   // for format
@@ -651,7 +651,7 @@ GameView::event(const Event& event) {
     ) {
       roadDragging = true;
       startRoad = tile;
-      areaBulldoze = (SDL_GetModState() & KMOD_CTRL);
+      areaBulldoze = (SDL_GetModState() & SDL_KMOD_CTRL);
     }
 
     if(roadDragging && cursorSize != 1) {
@@ -810,7 +810,7 @@ GameView::event(const Event& event) {
   case Event::WINDOWENTER:
     break;
   case Event::KEYDOWN: {
-    switch(event.keysym.scancode) {
+    switch(event.scancode) {
     case SDL_SCANCODE_LCTRL:
     case SDL_SCANCODE_RCTRL:
       if(roadDragging)
@@ -863,7 +863,7 @@ GameView::event(const Event& event) {
     }
   } break;
   case Event::KEYUP: {
-    switch(event.keysym.scancode) {
+    switch(event.scancode) {
     case SDL_SCANCODE_G: {
       MpsMap& mps = game->getMpsMap();
       if(mps.page == MpsMap::Page::GROUND)
@@ -949,7 +949,7 @@ GameView::event(const Event& event) {
 }
 
 void GameView::setPanningCursor() {
-    desktop->setSystemCursor(this, SDL_SYSTEM_CURSOR_SIZEALL);
+    desktop->setSystemCursor(this, SDL_SYSTEM_CURSOR_MOVE);
 }
 
 void GameView::setDefaultCursor() {

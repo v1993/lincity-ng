@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Desktop.hpp"
 
-#include <SDL.h>                          // for SDL_SystemCursor, SDL_GetDe...
+#include <SDL3/SDL.h>                     // for SDL_SystemCursor, SDL_GetDe...
 #include <libxml++/parsers/textreader.h>  // for TextReader
 #include <libxml++/ustring.h>             // for ustring
 #include <stddef.h>                       // for NULL
@@ -181,13 +181,13 @@ Desktop::getSystemCursor(SDL_SystemCursor id) {
 
 void
 Desktop::freeSystemCursor(SDL_SystemCursor id) {
-    SDL_FreeCursor(systemCursors[id]);
+    SDL_DestroyCursor(systemCursors[id]);
     systemCursors[id] = NULL;
 }
 
 void
 Desktop::freeAllSystemCursors() {
-    for(int id = 0; id < SDL_NUM_SYSTEM_CURSORS; id++)
+    for(int id = 0; id < SDL_SYSTEM_CURSOR_COUNT; id++)
         freeSystemCursor((SDL_SystemCursor)id);
 }
 

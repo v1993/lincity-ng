@@ -23,7 +23,7 @@
 #ifndef __TEXTUREMANAGERSDL_HPP__
 #define __TEXTUREMANAGERSDL_HPP__
 
-#include <SDL.h>                  // for SDL_Surface
+#include <SDL3/SDL.h>             // for SDL_Surface
 
 #include "../TextureManager.hpp"  // for TextureManager
 

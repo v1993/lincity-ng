@@ -22,9 +22,9 @@
 
 #include "main.hpp"
 
-#include <SDL.h>                                 // for SDL_GetError, SDL_Se...
-#include <SDL_mixer.h>                           // for Mix_HookMusicFinished
-#include <SDL_ttf.h>                             // for TTF_Init, TTF_Quit
+#include <SDL3/SDL.h>                            // for SDL_GetError, SDL_Se...
+#include <SDL3_mixer/SDL_mixer.h>                // for Mix_HookMusicFinished
+#include <SDL3_ttf/SDL_ttf.h>                    // for TTF_Init, TTF_Quit
 #include <fmt/base.h>                            // for println
 #include <fmt/format.h>
 #include <gettext.h>                             // for bindtextdomain, text...
@@ -58,7 +58,7 @@
 #endif
 
 #ifndef DISABLE_GL_MODE
-#include <SDL_opengl.h>                          // for glDisable, glLoadIde...
+#include <SDL3/SDL_opengl.h>                          // for glDisable, glLoadIde...
 
 #include "gui/PainterGL/PainterGL.hpp"           // for PainterGL
 #include "gui/PainterGL/TextureManagerGL.hpp"    // for TextureManagerGL
@@ -83,7 +83,7 @@ Painter* painter = 0;
 const char *appdatadir;
 std::optional<std::string> oldLanguage = std::nullopt;
 
-void musicHalted() {
+void musicHalted(void *userdate, MIX_Track *track) {
     getSound()->changeTrack(NEXT_OR_FIRST_TRACK);
     //FIXME: options menu song entry doesn't update while song changes.
 }
@@ -111,10 +111,8 @@ void videoSizeChanged(int width, int height) {
 void resizeVideo(int width, int height, bool fullscreen)
 {
     // Set fullscreen (video mode change)
-    if (fullscreen) {
-        SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-    } else {
-        SDL_SetWindowFullscreen(window, 0);
+    SDL_SetWindowFullscreen(window, fullscreen);
+    if (!fullscreen) {
         SDL_SetWindowSize(window, width, height);
     }
 }
@@ -123,7 +121,7 @@ void initVideo(int width, int height)
 {
     Uint32 flags = 0;
 
-    flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN;
+    flags = SDL_WINDOW_RESIZABLE;
 #ifndef DISABLE_GL_MODE
     if(getConfig()->useOpenGL.get()) {
         flags |= SDL_WINDOW_OPENGL;
@@ -136,11 +134,10 @@ void initVideo(int width, int height)
     }
 #endif
     if(getConfig()->useFullScreen.get())
-        flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+        flags |= SDL_WINDOW_FULLSCREEN;
 
     window = SDL_CreateWindow(PACKAGE_NAME " " PACKAGE_VERSION,
-                              SDL_WINDOWPOS_UNDEFINED,
-                              SDL_WINDOWPOS_UNDEFINED, width, height,
+                              width, height,
                               flags);
 
     if(getConfig()->useFullScreen.get()) {
@@ -178,7 +175,7 @@ void initVideo(int width, int height)
     else
 #endif
     {
-        window_renderer = SDL_CreateRenderer(window, -1, 0);
+        window_renderer = SDL_CreateRenderer(window, NULL);
 
         painter = new PainterSDL(window_renderer);
         std::cout << "\nSDL Mode " << width;
@@ -283,22 +280,21 @@ main(int argc, char** argv) {
 
   // initialize resources
   constexpr Uint32 sdlSubsystems =
-    SDL_INIT_TIMER |
     SDL_INIT_AUDIO |
     SDL_INIT_VIDEO |
     SDL_INIT_EVENTS;
-  if(SDL_Init(sdlSubsystems) < 0)
+  if( !SDL_Init(sdlSubsystems))
     throw std::runtime_error(fmt::format(
       "failed to initialize SDL: {}", SDL_GetError()));
-  if(TTF_Init() < 0)
+  if( !TTF_Init())
     throw std::runtime_error(fmt::format(
-      "failed to initialize SDL_ttf: {}", TTF_GetError()));
+      "failed to initialize SDL_ttf: {}", SDL_GetError()));
   SDL_SetHint(SDL_HINT_APP_NAME, PRETTY_NAME);
   SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
   initVideo(getConfig()->videoX.get(), getConfig()->videoY.get());
   initLincity();
   std::unique_ptr<Sound> sound(new Sound());
-  Mix_HookMusicFinished(musicHalted);
+  MIX_SetTrackStoppedCallback(sound->musicTrack, musicHalted, NULL);
 
   // enter main loop
   mainLoop();

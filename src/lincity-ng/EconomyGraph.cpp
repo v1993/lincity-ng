@@ -22,8 +22,8 @@
 
 #include "EconomyGraph.hpp"
 
-#include <SDL.h>                          // for SDL_Surface
-#include <SDL_ttf.h>                      // for TTF_RenderUTF8_Blended, TTF...
+#include <SDL3/SDL.h>                     // for SDL_Surface
+#include <SDL3_ttf/SDL_ttf.h>             // for TTF_RenderUTF8_Blended, TTF...
 #include <libxml++/parsers/textreader.h>  // for TextReader
 #include <libxml++/ustring.h>             // for ustring
 #include <algorithm>                      // for min, max
@@ -108,26 +108,26 @@ EconomyGraph::parse(xmlpp::TextReader& reader) {
       MNY=Money, POP=Population, TEC=Technology,
       FIR=Fire coverage
   */
-  labelXXX = TTF_RenderUTF8_Blended( font, _("Mining"), labelStyle.text_color.getSDLColor() );
+  labelXXX = TTF_RenderText_Blended( font, _("Mining"), 0, labelStyle.text_color.getSDLColor() );
   labelTextureMIN = texture_manager->create( labelXXX );
-  labelXXX = TTF_RenderUTF8_Blended( font, _("Trade"), labelStyle.text_color.getSDLColor() );
+  labelXXX = TTF_RenderText_Blended( font, _("Trade"), 0, labelStyle.text_color.getSDLColor() );
   labelTexturePRT = texture_manager->create( labelXXX );
-  labelXXX = TTF_RenderUTF8_Blended( font, _("Money"), labelStyle.text_color.getSDLColor() );
+  labelXXX = TTF_RenderText_Blended( font, _("Money"), 0, labelStyle.text_color.getSDLColor() );
   labelTextureMNY = texture_manager->create( labelXXX );
-  labelXXX = TTF_RenderUTF8_Blended( font, _("Popul."), labelStyle.text_color.getSDLColor() );
+  labelXXX = TTF_RenderText_Blended( font, _("Popul."), 0, labelStyle.text_color.getSDLColor() );
   labelTexturePOP = texture_manager->create( labelXXX );
-  labelXXX = TTF_RenderUTF8_Blended( font, _("Techn."), labelStyle.text_color.getSDLColor() );
+  labelXXX = TTF_RenderText_Blended( font, _("Techn."), 0, labelStyle.text_color.getSDLColor() );
   labelTextureTEC = texture_manager->create( labelXXX );
-  labelXXX = TTF_RenderUTF8_Blended( font, _("Fire"), labelStyle.text_color.getSDLColor() );
+  labelXXX = TTF_RenderText_Blended( font, _("Fire"), 0, labelStyle.text_color.getSDLColor() );
   labelTextureFIR = texture_manager->create( labelXXX );
 
-  labelXXX = TTF_RenderUTF8_Blended( font, _("Economy Overview:"), labelStyle.text_color.getSDLColor() );
+  labelXXX = TTF_RenderText_Blended( font, _("Economy Overview:"), 0, labelStyle.text_color.getSDLColor() );
   labelTextureEconomy = texture_manager->create( labelXXX );
 
-  labelXXX = TTF_RenderUTF8_Blended( font, _("Sustainability:"), labelStyle.text_color.getSDLColor() );
+  labelXXX = TTF_RenderText_Blended( font, _("Sustainability:"), 0, labelStyle.text_color.getSDLColor() );
   labelTextureSustainability = texture_manager->create( labelXXX );
 
-  labelXXX = TTF_RenderUTF8_Blended( font, _("Frames per Second:"), labelStyle.text_color.getSDLColor() );
+  labelXXX = TTF_RenderText_Blended( font, _("Frames per Second:"), 0, labelStyle.text_color.getSDLColor() );
   labelTextureFPS = texture_manager->create( labelXXX );
 }
 
@@ -188,9 +188,9 @@ EconomyGraph::drawHistoryLineGraph(Painter& painter, Rect2D space) {
       space.p2 - Vector2(i, 0)));
 
     // glEnable(GL_LINE_SMOOTH);
-    val = std::max(0.f, log((float)pop) + popScale0) * popScale1;
+    val = std::max(0.0, log((float)pop) + popScale0) * popScale1;
     valP = !popPrev ? val :
-      std::max(0.f, log((float)popPrev) + popScale0) * popScale1;
+      std::max(0.0, log((float)popPrev) + popScale0) * popScale1;
     painter.setLineColor(brown);
     painter.drawLine(
       space.p2 - half

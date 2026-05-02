@@ -45,7 +45,7 @@
 #include "util/xmlutil.hpp"               // for xmlStrF, xmlStr, xmlFormat
 
 #ifdef LINCITYNG_RELOCATABLE
-#include <SDL.h>                          // for SDL_GetBasePath
+#include <SDL3/SDL.h>                          // for SDL_GetBasePath
 #endif
 
 template<typename V>

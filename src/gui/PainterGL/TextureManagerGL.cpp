@@ -17,8 +17,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 #include "TextureManagerGL.hpp"
 
-#include <SDL.h>          // for SDL_FreeSurface, SDL_CreateRGBSurface, SDL_...
-#include <SDL_opengl.h>   // for glTexParameteri, GL_TEXTURE_2D, GL_REPEAT
+#include <SDL3/SDL.h>          // for SDL_DestroySurface, SDL_CreateRGBSurface, SDL_...
+#include <SDL3/SDL_opengl.h>   // for glTexParameteri, GL_TEXTURE_2D, GL_REPEAT
 #include <stddef.h>       // for NULL
 #include <sstream>        // for basic_ostringstream, basic_ostream, operator<<
 #include <stdexcept>      // for runtime_error
@@ -93,7 +93,7 @@ TextureManagerGL::create(SDL_Surface* image)
     texture->width = image->w;
     texture->height = image->h;
 
-    SDL_FreeSurface(convert);
+    SDL_DestroySurface(convert);
     return texture;
 }
 

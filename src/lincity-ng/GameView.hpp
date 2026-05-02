@@ -23,7 +23,7 @@
 #ifndef __GAMEVIEW_HPP__
 #define __GAMEVIEW_HPP__
 
-#include <SDL.h>                  // for Uint32, SDL_Surface, SDL_Thread
+#include <SDL3/SDL.h>             // for Uint32, SDL_Surface, SDL_Thread
 #include <filesystem>             // for path
 #include <memory>                 // for unique_ptr
 #include <string>                 // for string, basic_string
