@@ -86,7 +86,7 @@ Gradient::resize(float width, float height)
     float da = ((float) to.a - (float) from.a) / w;
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    SDL_Surface* surface = SDL_CreateRGBSurface((int) width, (int) height,
+    SDL_Surface* surface = SDL_CreateSurface((int) width, (int) height,
                                                 SDL_GetPixelFormatForMasks(32, 0xff000000,
                                                 0x00ff0000,
                                                 0x0000ff00,

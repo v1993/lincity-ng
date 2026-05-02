@@ -49,13 +49,13 @@ TextureManagerGL::create(SDL_Surface* image)
     int texture_h = powerOfTwo(image->h);
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    SDL_Surface* convert = SDL_CreateRGBSurface(SDL_SWSURFACE,
-            texture_w, texture_h, 32,
-            0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
+    SDL_Surface* convert = SDL_CreateSurface(texture_w, texture_h,
+                             SDL_GetPixelFormatForMasks(32, 0xff000000,
+                                   0x00ff0000, 0x0000ff00, 0x000000ff);
 #else
-    SDL_Surface* convert = SDL_CreateRGBSurface(SDL_SWSURFACE,
-        texture_w, texture_h, 32,
-        0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+    SDL_Surface* convert = SDL_CreateSurface(texture_w, texture_h,
+                             SDL_GetPixelFormatForMasks(32, 0x000000ff,
+                                   0x0000ff00, 0x00ff0000, 0xff000000));
 #endif
     if(convert == 0) {
         std::ostringstream msg;

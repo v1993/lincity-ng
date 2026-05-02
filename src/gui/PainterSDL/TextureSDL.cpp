@@ -24,17 +24,12 @@
 
 #include <SDL3/SDL.h>
 #include <cassert>
-#include <cstddef>
-#include <stdexcept>
 #include <iostream>
 
 TextureSDL::TextureSDL(SDL_Texture *tx) : tx(tx) {
   assert(tx);
-  float w, h;
-  if( !SDL_GetTextureSize(tx, &w, &h))
-    throw std::runtime_error(SDL_GetError());
-  width=w;
-  height=h;
+  width = tx->w;
+  height = tx->h;
   assert(width && height);
 }
 

@@ -22,7 +22,7 @@
 
 #include "TextureManagerSDL.hpp"
 
-#include <SDL3/SDL.h>      // for SDL_ConvertSurface
+#include <SDL3/SDL.h>      // for SDL_Texture, SDL_CreateTextureFromSurface
 #include <stdexcept>
 
 #include "TextureSDL.hpp"  // for TextureSDL

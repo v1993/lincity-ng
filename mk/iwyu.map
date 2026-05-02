@@ -4,10 +4,6 @@
 { include: [<libintl.h>, private, <gettext.h>, public] },
 { symbol: [ENABLE_NLS, private, '"util/gettextutil.hpp"', public] },
 
-# { include: [ <SDL3/SDL2_framerate.h>, private, <SDL3/SDL.h>, public ] },
-# { include: [ <SDL2_gfxPrimitives.h>, private, <SDL3/SDL.h>, public ] },
-# { include: [ <SDL2_imageFilter.h>, private, <SDL3/SDL.h>, public ] },
-# { include: [ <SDL3/SDL2_rotozoom.h>, private, <SDL3/SDL.h>, public ] },
 { include: [ <SDL3/SDL_assert.h>, private, <SDL3/SDL.h>, public ] },
 { include: [ <SDL3/SDL_atomic.h>, private, <SDL3/SDL.h>, public ] },
 { include: [ <SDL3/SDL_audio.h>, private, <SDL3/SDL.h>, public ] },

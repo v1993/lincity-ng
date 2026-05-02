@@ -275,7 +275,6 @@ PainterSDL::pushRenderTarget(Texture *target) {
   assert(t);
   #ifndef NDEBUG
   {
-    ;
     SDL_PropertiesID props = SDL_GetTextureProperties(t->tx);
     int tflags = SDL_GetNumberProperty(props, SDL_PROP_TEXTURE_ACCESS_NUMBER, 0);
     assert(tflags == SDL_TEXTUREACCESS_TARGET);

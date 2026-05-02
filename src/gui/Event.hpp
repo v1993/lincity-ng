@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef __EVENT_HPP__
 #define __EVENT_HPP__
 
-#include <SDL3/SDL.h>   // for SDL_Event, SDL_Keysym
+#include <SDL3/SDL.h>   // for SDL_Event, SDL_Keymod, SDL_Scancode
 
 #include "Vector2.hpp"  // for Vector2
 
@@ -75,8 +75,6 @@ public:
     /// mouse button state (can be decoded with SDL_BUTTON macros)
     Uint32 mousebuttonstate;
 
-    /// symbol of the key that has been pressed (see SDL_keysym)
-    //SDL_Keysym keysym;
     Uint32 key;
     SDL_Keymod mod;
     SDL_Scancode scancode;

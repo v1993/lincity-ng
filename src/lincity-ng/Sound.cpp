@@ -263,8 +263,8 @@ Sound::Sound()
         loaderThread = SDL_CreateThread(soundThread, "Sound", this);
     }
 
-    musicTrack=MIX_CreateTrack(mixer);
-    soundTrack=MIX_CreateTrack(mixer);
+    musicTrack = MIX_CreateTrack(mixer);
+    soundTrack = MIX_CreateTrack(mixer);
 
     setMusicVolume(getConfig()->musicVolume.get());
     setSoundVolume(getConfig()->soundVolume.get());
@@ -458,7 +458,6 @@ Sound::playMusic()
 
         MIX_SetTrackAudio(musicTrack, currentMusic);
         MIX_PlayTrack(musicTrack, 0);
-//        Mix_PlayMusic(currentMusic, 1);
     }
 }
 

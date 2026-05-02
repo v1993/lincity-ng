@@ -27,12 +27,12 @@ class TextureGL : public Texture
 public:
     virtual ~TextureGL();
 
-    float getWidth() const
+    virtual int getWidth() const
     {
         return width;
     }
 
-    float getHeight() const
+    virtual int getHeight() const
     {
         return height;
     }

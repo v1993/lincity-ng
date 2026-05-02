@@ -57,13 +57,7 @@ Event::Event(SDL_Event& event)
             type = MOUSEWHEEL;
             scrolly = event.wheel.integer_y;
             scrolly_precise = event.wheel.y;
-            #if SDL_VERSION_ATLEAST(2,26,0)
             mousepos = Vector2(event.wheel.mouse_x, event.wheel.mouse_y);
-            #else
-            int x, y;
-            SDL_GetMouseState(&x, &y);
-            mousepos = Vector2(x, y);
-            #endif
             break;
         case SDL_EVENT_WINDOW_MOUSE_ENTER:
             type = WINDOWENTER;

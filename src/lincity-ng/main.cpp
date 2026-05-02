@@ -175,7 +175,7 @@ void initVideo(int width, int height)
     else
 #endif
     {
-        window_renderer = SDL_CreateRenderer(window, NULL);
+        window_renderer = SDL_CreateRenderer(window, nullptr);
 
         painter = new PainterSDL(window_renderer);
         std::cout << "\nSDL Mode " << width;
