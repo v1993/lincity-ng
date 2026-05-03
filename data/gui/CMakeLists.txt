@@ -43,4 +43,4 @@ endforeach()
 add_custom_target(guiXml ALL DEPENDS ${guiSourceFiles} SOURCES ${guiSourceFiles})
 
 include(TranslateTarget)
-translate_target_xml(guiXml guiXml.pot ${CMAKE_CURRENT_SOURCE_DIR}/gui.its)
+translate_target_xml(guiXml ${CMAKE_CURRENT_SOURCE_DIR}/gui.its)
