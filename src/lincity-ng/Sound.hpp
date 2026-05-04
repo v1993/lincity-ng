@@ -60,6 +60,7 @@ public:
     void playSound(const MapTile& tile);
     void playASound(MIX_Audio *chunk);
     void playMusic();
+    static void musicHalted(void *userdate, MIX_Track *track);
     void changeTrack(MusicTransport command);
     void enableMusic(bool enabled);
     /** set Music volume 0..100, 0=silent */
@@ -73,7 +74,6 @@ public:
 
     void setTechLevel(int tech) { tech_level = tech; }
 
-    MIX_Track *musicTrack;
 
 private:
     static int soundThread(void* ptr);
@@ -90,6 +90,7 @@ private:
 
     int tech_level = 0;
 
+    MIX_Track *musicTrack;
     MIX_Track *soundTrack;
     MIX_Mixer *mixer;
 };

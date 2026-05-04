@@ -165,8 +165,8 @@ EconomyGraph::drawHistoryLineGraph(Painter& painter, Rect2D space) {
   // (.0,.0) makes the lines traverse from one side of the pixel to the other,
   // thus making sure the pixel is drawn.
   const Vector2 half(.0, .0);
-  const float popScale0 = -log(100. * NUMOF_DAYS_IN_MONTH);
-  const float popScale1 = 1/log(1000.);
+  const float popScale0 = -logf(100. * NUMOF_DAYS_IN_MONTH);
+  const float popScale1 = 1/logf(1000.);
   int pop = 0, popPrev;
   float val, valP;
   for(int i = 0; i < w; i++) {
@@ -188,9 +188,9 @@ EconomyGraph::drawHistoryLineGraph(Painter& painter, Rect2D space) {
       space.p2 - Vector2(i, 0)));
 
     // glEnable(GL_LINE_SMOOTH);
-    val = std::max(0.0, log((float)pop) + popScale0) * popScale1;
+    val = std::max(0.f, logf((float)pop) + popScale0) * popScale1;
     valP = !popPrev ? val :
-      std::max(0.0, log((float)popPrev) + popScale0) * popScale1;
+      std::max(0.f, logf((float)popPrev) + popScale0) * popScale1;
     painter.setLineColor(brown);
     painter.drawLine(
       space.p2 - half

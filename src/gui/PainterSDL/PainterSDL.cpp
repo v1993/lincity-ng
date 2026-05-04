@@ -23,6 +23,7 @@
 #include "PainterSDL.hpp"
 
 #include <SDL3/SDL.h>      // for SDL_GetError, SDL_SetRenderDrawColor, SDL_...
+#include <SDL3/SDL_properties.h> // for SDL_PropertiesID, SDL_GetNumberPrope...
 #include <algorithm>       // for max, min
 #include <cassert>         // for assert
 #include <cmath>           // for lround
@@ -99,8 +100,8 @@ PainterSDL::fillPolygon(int numberPoints, const Vector2* points) {
   assert(numberPoints >= 3);
 
   SDL_FColor color = (SDL_FColor)
-    {.r = 1.0f * fillColor.r / 255, .g = 1.0f * fillColor.g / 255,
-     .b = 1.0f * fillColor.b / 255, .a = 1.0f * fillColor.a / 255};
+    {.r = fillColor.r / 255.f, .g = fillColor.g / 255.f,
+     .b = fillColor.b / 255.f, .a = fillColor.a / 255.f};
 
   float *xy = new float[numberPoints * 2];
   for(int i = 0; i < numberPoints; i++) {

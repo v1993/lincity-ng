@@ -255,7 +255,7 @@ Sound::Sound()
     }
     /* Open the audio device */
     mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
-    if (NULL == mixer) {
+    if (!mixer) {
         fprintf(stderr, "Couldn't open audio: %s\n", SDL_GetError());
         return;
     } else {
@@ -281,6 +281,7 @@ Sound::Sound()
         currentTrack = playlist[0];
     }
     playMusic();
+    MIX_SetTrackStoppedCallback(musicTrack, musicHalted, NULL);
 }
 
 Sound::~Sound()
@@ -368,6 +369,14 @@ Sound::getIdName(const std::string& filename)
 
     return filename.substr(0, pos);
 }
+
+void
+Sound::musicHalted(void *userdate, MIX_Track *track)
+{
+  getSound()->changeTrack(NEXT_OR_FIRST_TRACK);
+  //FIXME: options menu song entry doesn't update while song changes.
+}
+
 
 /*
  * Change backround music.

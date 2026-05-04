@@ -23,6 +23,7 @@
 #include "main.hpp"
 
 #include <SDL3/SDL.h>                            // for SDL_GetError, SDL_Se...
+#include <SDL3/SDL_init.h>                       // for SDL_INIT_AUDIO, SDL_...
 #include <SDL3_mixer/SDL_mixer.h>                // for Mix_HookMusicFinished
 #include <SDL3_ttf/SDL_ttf.h>                    // for TTF_Init, TTF_Quit
 #include <fmt/base.h>                            // for println
@@ -294,7 +295,6 @@ main(int argc, char** argv) {
   initVideo(getConfig()->videoX.get(), getConfig()->videoY.get());
   initLincity();
   std::unique_ptr<Sound> sound(new Sound());
-  MIX_SetTrackStoppedCallback(sound->musicTrack, musicHalted, NULL);
 
   // enter main loop
   mainLoop();

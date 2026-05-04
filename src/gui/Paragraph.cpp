@@ -348,8 +348,7 @@ Paragraph::resize(float width, float height)
                 lineimages.push_back(spanimages.back());
             } else {
                 SDL_Surface* lineimage = SDL_CreateSurface((int) pos.x,
-                        (int) lineheight, SDL_GetPixelFormatForMasks(32,
-                        0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000));
+                        (int) lineheight, SDL_PIXELFORMAT_ABGR8888);
                 if(lineimage == 0) {
                     throw std::runtime_error(
                             "Out of memory when composing line image");
@@ -429,7 +428,7 @@ Paragraph::resize(float width, float height)
         width = lineimages[0]->w;
     }
     SDL_Surface* result = SDL_CreateSurface((int) width, (int) height,
-            SDL_GetPixelFormatForMasks(32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000));
+                                            SDL_PIXELFORMAT_ABGR8888);
     if(result == 0) {
         throw std::runtime_error("Out of memory when creating text image");
     }

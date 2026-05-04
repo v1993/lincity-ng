@@ -87,16 +87,10 @@ Gradient::resize(float width, float height)
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
     SDL_Surface* surface = SDL_CreateSurface((int) width, (int) height,
-                                                SDL_GetPixelFormatForMasks(32, 0xff000000,
-                                                0x00ff0000,
-                                                0x0000ff00,
-                                                0x000000ff));
+                                             SDL_PIXELFORMAT_RGBA8888);
 #else
-    SDL_Surface* surface = SDL_CreateSurface(  (int) width, (int) height,
-                                                SDL_GetPixelFormatForMasks(32, 0x000000ff,
-                                                0x0000ff00,
-                                                0x00ff0000,
-                                                0xff000000));
+    SDL_Surface* surface = SDL_CreateSurface((int) width, (int) height,
+                                             SDL_PIXELFORMAT_ABGR8888);
 #endif
     if(surface == 0)
         throw std::runtime_error("Couldn't create SDL_Surface for gradient. "
