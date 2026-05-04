@@ -4,6 +4,7 @@
  *
  * Copyright (C) 2005      Wolfgang Becker <uafr@gmx.de>
  * Copyright (C) 2025      David Bears <dbear4q@gmail.com>
+ * Copyright (C) 2026      Marc Young <myoung008@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -250,8 +251,6 @@ Sound::Sound()
     audioOpen = false;
     if (!MIX_Init()) {
       SDL_Log("MIX_Init failed: %s", SDL_GetError());
-    } else {
-      SDL_Log("SDL_mixer is ready!");
     }
     /* Open the audio device */
     mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);

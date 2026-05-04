@@ -4,6 +4,7 @@
  *
  * Copyright (C) 2005      Matthias Braun <matze@braunis.de>
  * Copyright (C) 2024-2025 David Bears <dbear4q@gmail.com>
+ * Copyright (C) 2026      Marc Young <myoung008@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +24,8 @@
 #include "main.hpp"
 
 #include <SDL3/SDL.h>                            // for SDL_GetError, SDL_Se...
+#include <SDL3/SDL_init.h>                       // for SDL_INIT_AUDIO, SDL_...
+#include <SDL3_mixer/SDL_mixer.h>                // for Mix_HookMusicFinished
 #include <SDL3_ttf/SDL_ttf.h>                    // for TTF_Init, TTF_Quit
 #include <fmt/base.h>                            // for println
 #include <fmt/format.h>
