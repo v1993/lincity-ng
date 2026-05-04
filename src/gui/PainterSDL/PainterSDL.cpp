@@ -23,7 +23,6 @@
 #include "PainterSDL.hpp"
 
 #include <SDL3/SDL.h>      // for SDL_GetError, SDL_SetRenderDrawColor, SDL_...
-#include <SDL3/SDL_properties.h> // for SDL_PropertiesID, SDL_GetNumberPrope...
 #include <algorithm>       // for max, min
 #include <cassert>         // for assert
 #include <cmath>           // for lround

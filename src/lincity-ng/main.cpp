@@ -23,8 +23,6 @@
 #include "main.hpp"
 
 #include <SDL3/SDL.h>                            // for SDL_GetError, SDL_Se...
-#include <SDL3/SDL_init.h>                       // for SDL_INIT_AUDIO, SDL_...
-#include <SDL3_mixer/SDL_mixer.h>                // for Mix_HookMusicFinished
 #include <SDL3_ttf/SDL_ttf.h>                    // for TTF_Init, TTF_Quit
 #include <fmt/base.h>                            // for println
 #include <fmt/format.h>
@@ -83,11 +81,6 @@ Painter* painter = 0;
 // bool restart = false;
 const char *appdatadir;
 std::optional<std::string> oldLanguage = std::nullopt;
-
-void musicHalted(void *userdate, MIX_Track *track) {
-    getSound()->changeTrack(NEXT_OR_FIRST_TRACK);
-    //FIXME: options menu song entry doesn't update while song changes.
-}
 
 void videoSizeChanged(int width, int height) {
 #ifndef DISABLE_GL_MODE
