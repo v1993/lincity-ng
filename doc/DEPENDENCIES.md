@@ -4,19 +4,19 @@ Following is the list of dependencies for building and/or running LinCity-NG.
 
 ### Runtime Dependencies
 
-* SDL2 2.0.18 or later
+* SDL3 3.2.0 or later
 
   http://www.libsdl.org
 
-* SDL2_mixer 2.0.0 or later (with ogg-support enabled)
+* SDL3_mixer 3.0.0 or later (with ogg-support enabled)
 
   http://www.libsdl.org/projects/SDL_mixer/
 
-* SDL2_image 2.0.0 or later (with png support)
+* SDL3_image 3.0.0 or later (with png support)
 
   http://www.libsdl.org/projects/SDL_image/
 
-* SDL2_ttf 2.0.12 or later
+* SDL3_ttf 3.0.0 or later
 
   http://www.libsdl.org/projects/SDL_ttf/
 

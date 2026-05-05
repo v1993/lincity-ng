@@ -24,7 +24,7 @@
 #include "EconomyGraph.hpp"
 
 #include <SDL3/SDL.h>                     // for SDL_Surface
-#include <SDL3_ttf/SDL_ttf.h>             // for TTF_RenderUTF8_Blended, TTF...
+#include <SDL3_ttf/SDL_ttf.h>             // for TTF_RenderText_Blended, TTF...
 #include <libxml++/parsers/textreader.h>  // for TextReader
 #include <libxml++/ustring.h>             // for ustring
 #include <algorithm>                      // for min, max

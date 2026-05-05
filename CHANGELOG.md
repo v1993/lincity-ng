@@ -14,7 +14,6 @@
 - Combined the source and GUI translation PO files into one.
 - Migrated GUI module from libxml2 to libxml++.
 - Added locale-independent formatting and parsing for XML.
-- Migrated from SDL2 to SDL3; Requires SDL >= 3.20.0
 
 ###### Documentation / Translation
 - Reformatted the `--help` output, and added a brief command-line template.
