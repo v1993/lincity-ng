@@ -1,4 +1,11 @@
-## Unreleased
+## LinCity-NG 2.15.0
+
+date: 2026-05-08
+
+###### Gameplay
+- Added a chance for waste burning to catch the building on fire.
+- Increased fire probability for hospitals.
+- Changed the crash site calculation for rockets.
 
 ###### User Interface
 - Added partial language switching without restarting the game. (GUI components
@@ -7,6 +14,7 @@
   suggesting to the user to restart the game now uses the new language.
 
 ###### Internal
+- Migrated from SDL2 to SDL3; requires SDL >= 3.2.0.
 - Fixed Ninja build generation.
 - Added gettext/libintl optional library dependency.
 - Removed the `tinygettext` gettext implementation.
@@ -14,6 +22,9 @@
 - Combined the source and GUI translation PO files into one.
 - Migrated GUI module from libxml2 to libxml++.
 - Added locale-independent formatting and parsing for XML.
+- Added environment variables `LINCITYNG_CONFIG_FILE`, `LINCITYNG_APP_DATA_DIR`,
+  and `LINCITYNG_USER_DATA_DIR` for setting the config file, app data, and user
+  data locations respectively.
 
 ###### Documentation / Translation
 - Reformatted the `--help` output, and added a brief command-line template.
