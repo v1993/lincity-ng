@@ -1,5 +1,6 @@
 /*
 Copyright (C) 2005 Matthias Braun <matze@braunis.de>
+Copyright (C) 2026 Marc Young <myoung008@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,8 +24,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Paragraph.hpp"
 
-#include <SDL.h>                          // for SDL_Surface, SDL_FreeSurface
-#include <SDL_ttf.h>                      // for TTF_FontHeight, TTF_FontAscent
+#include <SDL3/SDL.h>                     // for SDL_Surface, SDL_DestroySurface
+#include <SDL3_ttf/SDL_ttf.h>             // for TTF_FontHeight, TTF_FontAscent
 #include <assert.h>                       // for assert
 #include <fmt/base.h>                     // for println
 #include <libxml++/parsers/textreader.h>  // for TextReader
@@ -221,7 +222,7 @@ Paragraph::resize(float width, float height)
     TTF_Font* font = fontManager->getFont(span->style);
     std::string::size_type p = 0;
     std::string::size_type linestart = 0;
-    lineheight = TTF_FontHeight(font);
+    lineheight = TTF_GetFontHeight(font);
     // string that should be rendered next
     std::string line;
     // current rendering position
@@ -248,7 +249,7 @@ Paragraph::resize(float width, float height)
 
         // check line size...
         int render_width, render_height;
-        TTF_SizeUTF8(font, line.c_str(), &render_width, &render_height);
+        TTF_GetStringSize(font, line.c_str(), 0, &render_width, &render_height);
 
         bool render = false;
         bool linefeed = false;
@@ -279,16 +280,16 @@ Paragraph::resize(float width, float height)
 
         if(render && line != "")
         {
-            if(TTF_FontHeight(font) > lineheight)
+            if(TTF_GetFontHeight(font) > lineheight)
             {
-                lineheight = TTF_FontHeight(font);
-                baseline = TTF_FontAscent(font);
+                lineheight = TTF_GetFontHeight(font);
+                baseline = TTF_GetFontAscent(font);
             }
 
             // render span
             //printf("Rendering: '%s'.\n", line.c_str());
-            SDL_Surface* spansurface = TTF_RenderUTF8_Blended(font,
-                    line.c_str(), span->style.text_color.getSDLColor());
+            SDL_Surface* spansurface = TTF_RenderText_Blended(font,
+                    line.c_str(), 0, span->style.text_color.getSDLColor());
             if(spansurface == 0) {
                 std::stringstream msg;
                 msg << "Error rendering text: " << SDL_GetError();
@@ -324,7 +325,7 @@ Paragraph::resize(float width, float height)
             pos.y += yoffset;
             spanxoffset.push_back(pos.x);
             spanimages.push_back(spansurface);
-            spanbaselines.push_back(TTF_FontAscent(font));
+            spanbaselines.push_back(TTF_GetFontAscent(font));
 
             // remember span position if it is a link
             if(span->style.href != "") {
@@ -347,9 +348,8 @@ Paragraph::resize(float width, float height)
             if(spanimages.size() == 1) {
                 lineimages.push_back(spanimages.back());
             } else {
-                SDL_Surface* lineimage = SDL_CreateRGBSurface(0, (int) pos.x,
-                        (int) lineheight, 32,
-                        0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+                SDL_Surface* lineimage = SDL_CreateSurface((int) pos.x,
+                        (int) lineheight, SDL_PIXELFORMAT_ABGR8888);
                 if(lineimage == 0) {
                     throw std::runtime_error(
                             "Out of memory when composing line image");
@@ -364,7 +364,7 @@ Paragraph::resize(float width, float height)
                     {   rect.y = 0;}
 
                     SDL_BlitSurface(spanimages[i], 0, lineimage, &rect);
-                    SDL_FreeSurface(spanimages[i]);
+                    SDL_DestroySurface(spanimages[i]);
                 }
                 lineimages.push_back(lineimage);
             }
@@ -394,8 +394,8 @@ Paragraph::resize(float width, float height)
             ycoords.push_back(static_cast<int> (pos.y + style.margin_top));
             pos.y += lineheight;
 
-            lineheight = TTF_FontHeight(font);
-            baseline = TTF_FontAscent(font);
+            lineheight = TTF_GetFontHeight(font);
+            baseline = TTF_GetFontAscent(font);
         }
 
         // advance to next span if necessary
@@ -420,7 +420,7 @@ Paragraph::resize(float width, float height)
         this->width = this->height = 0;
         for(std::vector<SDL_Surface*>::iterator i = lineimages.begin();
                 i != lineimages.end(); ++i)
-            SDL_FreeSurface(*i);
+            SDL_DestroySurface(*i);
         return;
     }
 
@@ -428,8 +428,8 @@ Paragraph::resize(float width, float height)
     if(width < 0) {
         width = lineimages[0]->w;
     }
-    SDL_Surface* result = SDL_CreateRGBSurface(0, (int) width, (int) height,
-            32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+    SDL_Surface* result = SDL_CreateSurface((int) width, (int) height,
+                                            SDL_PIXELFORMAT_ABGR8888);
     if(result == 0) {
         throw std::runtime_error("Out of memory when creating text image");
     }
@@ -446,15 +446,15 @@ Paragraph::resize(float width, float height)
         }
         rect.y = (Sint16) ycoords[i];
         SDL_BlitSurface(lineimages[i], 0, result, &rect);
-        SDL_FreeSurface(lineimages[i]);
+        SDL_DestroySurface(lineimages[i]);
     }
-    SDL_Surface* surface = SDL_ConvertSurfaceFormat(result, SDL_PIXELFORMAT_RGBA8888, 0);
-    SDL_FreeSurface(result);
+    SDL_Surface* surface = SDL_ConvertSurface(result, SDL_PIXELFORMAT_RGBA8888);
+    SDL_DestroySurface(result);
     if(surface == NULL)
     {   throw std::runtime_error("Out of memory when creating text image(d)");}
 
     texture = texture_manager->create(surface);
-    SDL_FreeSurface(surface);
+    SDL_DestroySurface(surface);
     this->width = width;
     this->height = height;
 

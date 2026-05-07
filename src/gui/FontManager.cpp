@@ -23,8 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "FontManager.hpp"
 
-#include <SDL.h>                  // for SDL_GetError
-#include <SDL_ttf.h>              // for TTF_CloseFont, TTF_Font, TTF_OpenFont
+#include <SDL3/SDL.h>             // for SDL_GetError
+#include <SDL3_ttf/SDL_ttf.h>     // for TTF_CloseFont, TTF_Font, TTF_OpenFont
 #include <filesystem>             // for path, operator/, operator<<
 #include <sstream>                // for basic_stringstream, basic_ostream
 #include <stdexcept>              // for runtime_error

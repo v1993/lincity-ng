@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef __TEXTUREGL_HPP__
 #define __TEXTUREGL_HPP__
 
-#include <SDL_opengl.h>
+#include <SDL3/SDL_opengl.h>
 #include "gui/Rect2D.hpp"
 #include "gui/Texture.hpp"
 
@@ -27,12 +27,12 @@ class TextureGL : public Texture
 public:
     virtual ~TextureGL();
 
-    float getWidth() const
+    virtual int getWidth() const
     {
         return width;
     }
 
-    float getHeight() const
+    virtual int getHeight() const
     {
         return height;
     }

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "CheckButton.hpp"
 
-#include <SDL.h>                          // for SDL_GetTicks, SDL_BUTTON_LEFT
+#include <SDL3/SDL.h>                     // for SDL_GetTicks, SDL_BUTTON_LEFT
 #include <libxml++/parsers/textreader.h>  // for TextReader
 #include <libxml++/ustring.h>             // for ustring
 #include <memory>                         // for unique_ptr

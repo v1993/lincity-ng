@@ -1,5 +1,6 @@
 /*
 Copyright (C) 2005 Matthias Braun <matze@braunis.de>
+Copyright (C) 2026 Marc Young <myoung008@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * @file Gradient.cpp
  */
 
-#include <SDL.h>                          // for SDL_Surface, SDL_CreateRGBS...
+#include <SDL3/SDL.h>                     // for SDL_Surface, SDL_CreateRGBS...
 #include <assert.h>                       // for assert
 #include <fmt/format.h>                   // for format
 #include <libxml++/parsers/textreader.h>  // for TextReader
@@ -86,19 +87,11 @@ Gradient::resize(float width, float height)
     float da = ((float) to.a - (float) from.a) / w;
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    SDL_Surface* surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
-                                                (int) width, (int) height,
-                                                32, 0xff000000,
-                                                0x00ff0000,
-                                                0x0000ff00,
-                                                0x000000ff);
+    SDL_Surface* surface = SDL_CreateSurface((int) width, (int) height,
+                                             SDL_PIXELFORMAT_RGBA8888);
 #else
-    SDL_Surface* surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
-                                                (int) width, (int) height,
-                                                32, 0x000000ff,
-                                                0x0000ff00,
-                                                0x00ff0000,
-                                                0xff000000);
+    SDL_Surface* surface = SDL_CreateSurface((int) width, (int) height,
+                                             SDL_PIXELFORMAT_ABGR8888);
 #endif
     if(surface == 0)
         throw std::runtime_error("Couldn't create SDL_Surface for gradient. "
@@ -145,10 +138,12 @@ inline void
 Gradient::draw_horizontal_line(SDL_Surface* surface, int x1, int y1, int x2,
                                uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
-    uint32_t col = (uint32_t) r << surface->format->Rshift
-        | (uint32_t) g << surface->format->Gshift
-        | (uint32_t) b << surface->format->Bshift
-        | (uint32_t) a << surface->format->Ashift;
+    const SDL_PixelFormatDetails *format = SDL_GetPixelFormatDetails(surface->format);
+
+    uint32_t col = (uint32_t) r << format->Rshift
+        | (uint32_t) g << format->Gshift
+        | (uint32_t) b << format->Bshift
+        | (uint32_t) a << format->Ashift;
 
     uint8_t* pix = (uint8_t*) surface->pixels + (y1*surface->pitch) + x1*4;
     for(int x = x1; x < x2; ++x) {
@@ -162,10 +157,12 @@ inline void
 Gradient::draw_vertical_line(SDL_Surface* surface, int x1, int y1, int y2,
                              uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
-    uint32_t col = (uint32_t) r << surface->format->Rshift
-        | (uint32_t) g << surface->format->Gshift
-        | (uint32_t) b << surface->format->Bshift
-        | (uint32_t) a << surface->format->Ashift;
+    const SDL_PixelFormatDetails *format = SDL_GetPixelFormatDetails(surface->format);
+
+    uint32_t col = (uint32_t) r << format->Rshift
+        | (uint32_t) g << format->Gshift
+        | (uint32_t) b << format->Bshift
+        | (uint32_t) a << format->Ashift;
     int pitch = surface->pitch;
 
     uint8_t* pix = (uint8_t*) surface->pixels + (y1*pitch) + x1*4;

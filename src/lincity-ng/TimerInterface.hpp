@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef __lc_timer_h__
 #define __lc_timer_h__
 
-#include <SDL.h>  // for Uint32
+#include <SDL3/SDL.h>  // for Uint32
 
 void reset_start_time();
 void get_real_time(void);

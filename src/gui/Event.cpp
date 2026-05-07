@@ -1,6 +1,7 @@
 /*
 Copyright (C) 2005 Matthias Braun <matze@braunis.de>
 Copyright (C) 2024 David Bears <dbear4q@gmail.com>
+Copyright (C) 2026 Marc Young <myoung008@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,60 +19,52 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 #include "Event.hpp"
 
-#include <SDL.h>     // for SDL_Event, SDL_KEYDOWN, SDL_KEYUP, SDL_MOUSEBUTT...
+#include <SDL3/SDL.h>// for SDL_Event, SDL_KEYDOWN, SDL_KEYUP, SDL_MOUSEBUTT...
 #include <assert.h>  // for assert
 
 Event::Event(SDL_Event& event)
     : inside(true)
 {
     switch(event.type) {
-        case SDL_KEYUP:
+        case SDL_EVENT_KEY_UP:
             type = KEYUP;
-            keysym = event.key.keysym;
+            key = event.key.key;
+            mod = event.key.mod;
+            scancode = event.key.scancode;
             break;
-        case SDL_KEYDOWN:
+        case SDL_EVENT_KEY_DOWN:
             type = KEYDOWN;
-            keysym = event.key.keysym;
+            key = event.key.key;
+            mod = event.key.mod;
+            scancode = event.key.scancode;
             break;
-        case SDL_MOUSEMOTION:
+        case SDL_EVENT_MOUSE_MOTION:
             type = MOUSEMOTION;
             mousepos = Vector2(event.motion.x, event.motion.y);
             mousemove = Vector2(event.motion.xrel, event.motion.yrel);
             mousebuttonstate = event.motion.state;
             break;
-        case SDL_MOUSEBUTTONUP:
+        case SDL_EVENT_MOUSE_BUTTON_UP:
             type = MOUSEBUTTONUP;
             mousepos = Vector2(event.button.x, event.button.y);
             mousebutton = event.button.button;
             break;
-        case SDL_MOUSEBUTTONDOWN:
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
             type = MOUSEBUTTONDOWN;
             mousepos = Vector2(event.button.x, event.button.y);
             mousebutton = event.button.button;
             break;
-        case SDL_MOUSEWHEEL:
+        case SDL_EVENT_MOUSE_WHEEL:
             type = MOUSEWHEEL;
-            scrolly = event.wheel.y;
-            scrolly_precise = event.wheel.preciseY;
-            #if SDL_VERSION_ATLEAST(2,26,0)
-            mousepos = Vector2(event.wheel.mouseX, event.wheel.mouseY);
-            #else
-            int x, y;
-            SDL_GetMouseState(&x, &y);
-            mousepos = Vector2(x, y);
-            #endif
+            scrolly = event.wheel.integer_y;
+            scrolly_precise = event.wheel.y;
+            mousepos = Vector2(event.wheel.mouse_x, event.wheel.mouse_y);
             break;
-        case SDL_WINDOWEVENT:
-            switch(event.window.event) {
-            case SDL_WINDOWEVENT_ENTER:
-                type = WINDOWENTER;
-                break;
-            case SDL_WINDOWEVENT_LEAVE:
-                type = WINDOWLEAVE;
-                break;
-            default:
-                assert(false);
-            }
+        case SDL_EVENT_WINDOW_MOUSE_ENTER:
+            type = WINDOWENTER;
+            break;
+        case SDL_EVENT_WINDOW_MOUSE_LEAVE:
+            type = WINDOWLEAVE;
             break;
         default:
             assert(false);

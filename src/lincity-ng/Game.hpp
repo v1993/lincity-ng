@@ -23,7 +23,7 @@
 #ifndef __GAME_HPP__
 #define __GAME_HPP__
 
-#include <SDL.h>                 // for SDL_Window
+#include <SDL3/SDL.h>            // for SDL_Window
 #include <list>                  // for list
 #include <memory>                // for unique_ptr
 #include <string>                // for string

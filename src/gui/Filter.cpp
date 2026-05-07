@@ -28,7 +28,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 void color2Grey(SDL_Surface* surface)
 {
-    if(surface->format->BitsPerPixel != 32)
+    const SDL_PixelFormatDetails *format = SDL_GetPixelFormatDetails(surface->format);
+
+    if(format->bits_per_pixel != 32)
         throw std::runtime_error("Can only convert 32 bit images to greyscale");
     
     SDL_LockSurface(surface);
@@ -38,18 +40,18 @@ void color2Grey(SDL_Surface* surface)
         uint32_t* pixel = (uint32_t*) p;
         for(int x = 0; x < surface->w; ++x) {
             float red 
-                = (*pixel & surface->format->Rmask) >> surface->format->Rshift;
+                = (*pixel & format->Rmask) >> format->Rshift;
             float green
-                = (*pixel & surface->format->Gmask) >> surface->format->Gshift;
+                = (*pixel & format->Gmask) >> format->Gshift;
             float blue
-                = (*pixel & surface->format->Bmask) >> surface->format->Bshift;
+                = (*pixel & format->Bmask) >> format->Bshift;
             
             float greyvalf = 0.3 * red + 0.59 * green + 0.11 * blue;
             uint32_t greyval = (uint32_t) greyvalf;
-            *pixel = (*pixel & surface->format->Amask) 
-                | (greyval << surface->format->Rshift)
-                | (greyval << surface->format->Gshift)
-                | (greyval << surface->format->Bshift);
+            *pixel = (*pixel & format->Amask)
+                | (greyval << format->Rshift)
+                | (greyval << format->Gshift)
+                | (greyval << format->Bshift);
             pixel++;
         }
         p += surface->pitch;

@@ -35,15 +35,15 @@ set(APPSTREAM_ID "io.github.lincity_ng.lincity-ng")
 ### dependencies
 list(APPEND CMAKE_MODULE_PATH
   ${CMAKE_SOURCE_DIR}/mk/cmake/modules
-  ${CMAKE_SOURCE_DIR}/mk/cmake/modules/SDL2
+  ${CMAKE_SOURCE_DIR}/mk/cmake/modules/SDL3
 )
 set(CMAKE_FIND_PACKAGE_PREFER_CONFIG TRUE)
 find_package(Threads)
 find_package(ZLIB 1.0 REQUIRED)
-find_package(SDL2 2.0.18 REQUIRED)
-find_package(SDL2_image 2.0.0 REQUIRED)
-find_package(SDL2_mixer 2.0.0 REQUIRED)
-find_package(SDL2_ttf 2.0.12 REQUIRED)
+find_package(SDL3 3.2.0 REQUIRED)
+find_package(SDL3_image REQUIRED)
+find_package(SDL3_mixer REQUIRED)
+find_package(SDL3_ttf REQUIRED)
 find_package(LibXml2 REQUIRED) # requires >=2.6.11
 find_package(fmt 9.0.0 REQUIRED)
 find_package(LibXml++-5.0 REQUIRED)

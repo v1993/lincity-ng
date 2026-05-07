@@ -1,5 +1,6 @@
 /*
 Copyright (C) 2005 Matthias Braun <matze@braunis.de>
+Copyright (C) 2026 Marc Young <myoung008@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,8 +18,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 #include "TextureManagerGL.hpp"
 
-#include <SDL.h>          // for SDL_FreeSurface, SDL_CreateRGBSurface, SDL_...
-#include <SDL_opengl.h>   // for glTexParameteri, GL_TEXTURE_2D, GL_REPEAT
+#include <SDL3/SDL.h>          // for SDL_DestroySurface, SDL_CreateRGBSurface, SDL_...
+#include <SDL3/SDL_opengl.h>   // for glTexParameteri, GL_TEXTURE_2D, GL_REPEAT
 #include <stddef.h>       // for NULL
 #include <sstream>        // for basic_ostringstream, basic_ostream, operator<<
 #include <stdexcept>      // for runtime_error
@@ -49,13 +50,13 @@ TextureManagerGL::create(SDL_Surface* image)
     int texture_h = powerOfTwo(image->h);
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    SDL_Surface* convert = SDL_CreateRGBSurface(SDL_SWSURFACE,
-            texture_w, texture_h, 32,
-            0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
+    SDL_Surface* convert = SDL_CreateSurface(texture_w, texture_h,
+                             SDL_GetPixelFormatForMasks(32, 0xff000000,
+                                   0x00ff0000, 0x0000ff00, 0x000000ff);
 #else
-    SDL_Surface* convert = SDL_CreateRGBSurface(SDL_SWSURFACE,
-        texture_w, texture_h, 32,
-        0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+    SDL_Surface* convert = SDL_CreateSurface(texture_w, texture_h,
+                             SDL_GetPixelFormatForMasks(32, 0x000000ff,
+                                   0x0000ff00, 0x00ff0000, 0xff000000));
 #endif
     if(convert == 0) {
         std::ostringstream msg;
@@ -93,7 +94,7 @@ TextureManagerGL::create(SDL_Surface* image)
     texture->width = image->w;
     texture->height = image->h;
 
-    SDL_FreeSurface(convert);
+    SDL_DestroySurface(convert);
     return texture;
 }
 

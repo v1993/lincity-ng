@@ -23,8 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "TextureManager.hpp"
 
-#include <SDL.h>                  // for SDL_GetError, SDL_Surface
-#include <SDL_image.h>            // for IMG_Load
+#include <SDL3/SDL.h>             // for SDL_GetError, SDL_Surface
+#include <SDL3_image/SDL_image.h> // for IMG_Load
 #include <cassert>                // for assert
 #include <filesystem>             // for path, operator/
 #include <iostream>               // for char_traits, basic_ostream, operator<<
@@ -76,7 +76,7 @@ TextureManager::load(const std::filesystem::path& filename, Filter filter)
     }
 
     Texture* result = create(image);
-    SDL_FreeSurface(image);
+    SDL_DestroySurface(image);
     textures.insert(std::make_pair(info, result));
 
     return result;

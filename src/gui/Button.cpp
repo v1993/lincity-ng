@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * @file Button.cpp
  */
 
-#include <SDL.h>                          // for SDL_GetTicks, Uint32
+#include <SDL3/SDL.h>                     // for SDL_GetTicks, Uint32
 #include <cassert>                        // for assert
 #include <libxml++/parsers/textreader.h>  // for TextReader
 #include <libxml++/ustring.h>             // for ustring

@@ -4,6 +4,7 @@
  *
  * Copyright (C) 2005      Wolfgang Becker <uafr@gmx.de>
  * Copyright (C) 2025      David Bears <dbear4q@gmail.com>
+ * Copyright (C) 2026 Marc Young <myoung008@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +24,8 @@
 #ifndef __SOUND_HPP__
 #define __SOUND_HPP__
 
-#include <SDL.h>  // for SDL_Thread
-#include <SDL_mixer.h>   // for Mix_Chunk, Mix_Music
+#include <SDL3/SDL.h>    // for SDL_Thread
+#include <SDL3_mixer/SDL_mixer.h>   // for MIX_Audio
 #include <filesystem>
 #include <map>           // for multimap
 #include <string>        // for basic_string, string, operator<
@@ -58,8 +59,9 @@ public:
 
     void playSound(const std::string& name);
     void playSound(const MapTile& tile);
-    void playASound(Mix_Chunk *chunk);
+    void playASound(MIX_Audio *chunk);
     void playMusic();
+    static void musicHalted(void *userdate, MIX_Track *track);
     void changeTrack(MusicTransport command);
     void enableMusic(bool enabled);
     /** set Music volume 0..100, 0=silent */
@@ -73,20 +75,25 @@ public:
 
     void setTechLevel(int tech) { tech_level = tech; }
 
+
 private:
     static int soundThread(void* ptr);
     void loadWaves();
     std::string getIdName(const std::string& filename);
 
-    typedef std::multimap<std::string,Mix_Chunk*> chunks_t;
+    typedef std::multimap<std::string,MIX_Audio*> chunks_t;
     chunks_t waves;
     bool audioOpen;
     SDL_Thread* loaderThread;
-    Mix_Music* currentMusic;
+    MIX_Audio* currentMusic;
     int totalTracks;
     std::vector<song> playlist;
 
     int tech_level = 0;
+
+    MIX_Track *musicTrack;
+    MIX_Track *soundTrack;
+    MIX_Mixer *mixer;
 };
 
 //TODO: singleton

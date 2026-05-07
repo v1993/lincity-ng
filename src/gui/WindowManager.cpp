@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 #include "WindowManager.hpp"
 
-#include <SDL.h>                          // for SDL_SystemCursor, SDL_BUTTO...
+#include <SDL3/SDL.h>                     // for SDL_SystemCursor, SDL_BUTTO...
 #include <libxml++/parsers/textreader.h>  // for TextReader
 #include <stdexcept>                      // for runtime_error
 #include <utility>                        // for move
@@ -135,7 +135,7 @@ WindowManager::event(const Event& event) {
           Vector2 pos = event.mousepos + dragOffset;
           pos.constrain(Rect2D(Vector2(), getSize() - window->getSize()));
           child.setPos(pos);
-          desktop->setSystemCursor(this, SDL_SYSTEM_CURSOR_SIZEALL);
+          desktop->setSystemCursor(this, SDL_SYSTEM_CURSOR_MOVE);
           setDirty();
           hasMoved = true;
           visible = false;
@@ -180,7 +180,7 @@ WindowManager::event(const Event& event) {
         ) {
           dragWindow = window;
           dragEdge = edge;
-          int cursorId = SDL_SYSTEM_CURSOR_SIZENWSE;
+          int cursorId = SDL_SYSTEM_CURSOR_NWSE_RESIZE;
           switch(dragEdge) {
           case Edge::N:
           case Edge::S:

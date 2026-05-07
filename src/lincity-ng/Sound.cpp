@@ -4,6 +4,7 @@
  *
  * Copyright (C) 2005      Wolfgang Becker <uafr@gmx.de>
  * Copyright (C) 2025      David Bears <dbear4q@gmail.com>
+ * Copyright (C) 2026      Marc Young <myoung008@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +23,8 @@
 
 #include "Sound.hpp"
 
-#include <SDL.h>                          // for SDL_GetError, SDL_CreateThread
-#include <SDL_mixer.h>                    // for Mix_Volume, Mix_FreeMusic
+#include <SDL3/SDL.h>                     // for SDL_GetError, SDL_CreateThread
+#include <SDL3_mixer/SDL_mixer.h>         // for Mix_Volume, Mix_FreeMusic
 #include <fmt/base.h>                     // for println
 #include <fmt/format.h>                   // for format
 #include <libxml++/parsers/textreader.h>  // for TextReader
@@ -82,7 +83,7 @@ Sound::loadWaves() {
   resGrpVec.clear();
   int resourceID_level = 0;
   std::filesystem::path key;
-  Mix_Chunk *chunk;
+  MIX_Audio *chunk;
 
   if(!reader.is_empty_element())
   while(reader.read()) {
@@ -133,10 +134,10 @@ Sound::loadWaves() {
       reader.move_to_element();
 
       fullname = directory / key;
-      chunk = Mix_LoadWAV(fullname.string().c_str());
+      chunk = MIX_LoadAudio(mixer, fullname.string().c_str(), true);
       if(!chunk) {
         fmt::println(stderr, "warning: filed to load sound {:?}: {}",
-          key, Mix_GetError());
+          key, SDL_GetError());
       }
       if (resourceID_level && resGrpVec.size()) {
         for(size_t i=0; i< resGrpVec.size(); ++i)
@@ -144,7 +145,7 @@ Sound::loadWaves() {
       }
       else {
         std::string idName = getIdName(key);
-        waves.insert(std::pair<std::string,Mix_Chunk*>(idName, chunk));
+        waves.insert(std::pair<std::string,MIX_Audio*>(idName, chunk));
       }
       key.clear();
     }
@@ -248,14 +249,21 @@ Sound::Sound()
 
     //Load Sound
     audioOpen = false;
+    if (!MIX_Init()) {
+      SDL_Log("MIX_Init failed: %s", SDL_GetError());
+    }
     /* Open the audio device */
-    if (Mix_OpenAudio( MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+    mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
+    if (!mixer) {
         fprintf(stderr, "Couldn't open audio: %s\n", SDL_GetError());
         return;
     } else {
         audioOpen = true;
         loaderThread = SDL_CreateThread(soundThread, "Sound", this);
     }
+
+    musicTrack = MIX_CreateTrack(mixer);
+    soundTrack = MIX_CreateTrack(mixer);
 
     setMusicVolume(getConfig()->musicVolume.get());
     setSoundVolume(getConfig()->soundVolume.get());
@@ -272,6 +280,7 @@ Sound::Sound()
         currentTrack = playlist[0];
     }
     playMusic();
+    MIX_SetTrackStoppedCallback(musicTrack, musicHalted, NULL);
 }
 
 Sound::~Sound()
@@ -279,17 +288,17 @@ Sound::~Sound()
     //SDL_KillThread( loaderThread );
     SDL_WaitThread( loaderThread, NULL );
     if(currentMusic)
-        Mix_FreeMusic(currentMusic);
+        MIX_DestroyAudio(currentMusic);
 
     if( soundPtr == this )
     {
         soundPtr = 0;
     }
     for (chunks_t::iterator i = waves.begin(); i != waves.end(); i++) {
-        Mix_FreeChunk( i->second );
+        MIX_DestroyAudio( i->second );
     }
     if ( audioOpen ) {
-        Mix_CloseAudio();
+        MIX_DestroyMixer(NULL);
         audioOpen = false;
     }
 }
@@ -321,8 +330,9 @@ Sound::playSound(const std::string& name) {
     it++;
   }
 
-  Mix_Volume(0, getConfig()->soundVolume.get());
-  Mix_PlayChannel( 0, it->second, 0 );
+  MIX_SetTrackGain(soundTrack, .01f * getConfig()->soundVolume.get());
+  MIX_SetTrackAudio(soundTrack, it->second);
+  MIX_PlayTrack(soundTrack, 0);
 }
 
 void
@@ -337,13 +347,14 @@ Sound::playSound(const MapTile& tile) {
     playASound(resourceGroup->chunks[rand() % count]);
 }
 
-void Sound::playASound(Mix_Chunk *chunk) {
+void Sound::playASound(MIX_Audio *chunk) {
   if(!getConfig()->soundEnabled.get())
     return;
   if(!audioOpen)
     return;
-  Mix_Volume(0, getConfig()->soundVolume.get());
-  Mix_PlayChannel(0, chunk, 0);
+  MIX_SetTrackGain(soundTrack, .01f * getConfig()->soundVolume.get());
+  MIX_SetTrackAudio(soundTrack, chunk);
+  MIX_PlayTrack(soundTrack, 0);
 }
 
 
@@ -357,6 +368,14 @@ Sound::getIdName(const std::string& filename)
 
     return filename.substr(0, pos);
 }
+
+void
+Sound::musicHalted(void *userdate, MIX_Track *track)
+{
+  getSound()->changeTrack(NEXT_OR_FIRST_TRACK);
+  //FIXME: options menu song entry doesn't update while song changes.
+}
+
 
 /*
  * Change backround music.
@@ -416,8 +435,8 @@ Sound::playMusic()
 
         if(currentMusic)
         {
-            if(Mix_PlayingMusic())
-            {   Mix_FreeMusic(currentMusic);}
+            if(MIX_TrackPlaying(musicTrack))
+            {   MIX_DestroyAudio(currentMusic);}
             currentMusic = 0;
         }
 
@@ -437,7 +456,7 @@ Sound::playMusic()
             return;
         }
 
-        currentMusic = Mix_LoadMUS(currentTrack.filename.string().c_str());
+        currentMusic = MIX_LoadAudio(NULL, currentTrack.filename.string().c_str(), false);
         if(currentMusic == 0) {
             std::cerr << "Couldn't load music file '"
                 << currentTrack.filename << "': "
@@ -445,7 +464,8 @@ Sound::playMusic()
             return;
         }
 
-        Mix_PlayMusic(currentMusic, 1);
+        MIX_SetTrackAudio(musicTrack, currentMusic);
+        MIX_PlayTrack(musicTrack, 0);
     }
 }
 
@@ -463,8 +483,8 @@ Sound::enableMusic(bool enabled) {
   if(enabled) {
     playMusic();
   } else {
-    if(Mix_PlayingMusic()) {
-      Mix_FadeOutMusic(1000);
+    if(MIX_TrackPlaying(musicTrack)) {
+      MIX_StopTrack(musicTrack, MIX_TrackMSToFrames(musicTrack, 1000));
     }
   }
 }
@@ -474,8 +494,8 @@ Sound::setMusicVolume(int vol)
 {
     assert(vol >= 0 && vol <= 100);
     getConfig()->musicVolume.session = vol;
-    float volvalue = vol * MIX_MAX_VOLUME / 100.0;
-    Mix_VolumeMusic(static_cast<int>(volvalue));
+    float volvalue = .01f * vol;
+    MIX_SetTrackGain(musicTrack, volvalue);
 }
 
 void
@@ -483,8 +503,8 @@ Sound::setSoundVolume(int vol)
 {
     assert(vol >= 0 && vol <= 100);
     getConfig()->soundVolume.session = vol;
-    float volvalue = vol * MIX_MAX_VOLUME / 100.0;
-    Mix_Volume(-1, static_cast<int>(volvalue));
+    float volvalue = .01f * vol;
+    MIX_SetTrackGain(soundTrack, volvalue);
 }
 
 

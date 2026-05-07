@@ -4,6 +4,7 @@
  *
  * Copyright (C) 2005      Matthias Braun <matze@braunis.de>
  * Copyright (C) 2025      David Bears <dbear4q@gmail.com>
+ * Copyright (C) 2026      Marc Young <myoung008@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +23,7 @@
 
 #include "Game.hpp"
 
-#include <SDL.h>                            // for SDL_KeyCode, Uint32, SDL_...
+#include <SDL3/SDL.h>                       // for SDL_KeyCode, Uint32, SDL_...
 #include <assert.h>                         // for assert
 #include <fmt/format.h>                     // for format, native_formatter:...
 #include <stddef.h>                         // for NULL
@@ -496,54 +497,51 @@ Game::run() {
             if(!status) break; // timed out
 
             switch(event.type) {
-                case SDL_WINDOWEVENT:
-                    switch(event.window.event) {
-                    case SDL_WINDOWEVENT_SIZE_CHANGED:
-                        videoSizeChanged(event.window.data1, event.window.data2);
-                        gui->resize(event.window.data1, event.window.data2);
-                        getConfig()->videoX.session = event.window.data1;
-                        getConfig()->videoY.session = event.window.data2;
-                        getConfig()->videoX.sessionToConfig();
-                        getConfig()->videoY.sessionToConfig();
-                        break;
-                    case SDL_WINDOWEVENT_ENTER:
-                    case SDL_WINDOWEVENT_LEAVE:
-                        Event gui_event(event);
-                        gui->event(gui_event);
-                        break;
-                    }
+                case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+                    videoSizeChanged(event.window.data1, event.window.data2);
+                    gui->resize(event.window.data1, event.window.data2);
+                    getConfig()->videoX.session = event.window.data1;
+                    getConfig()->videoY.session = event.window.data2;
+                    getConfig()->videoX.sessionToConfig();
+                    getConfig()->videoY.sessionToConfig();
                     break;
-                case SDL_KEYUP: {
+                case SDL_EVENT_WINDOW_MOUSE_ENTER:
+                case SDL_EVENT_WINDOW_MOUSE_LEAVE: {
+                    Event gui_event(event);
+                    gui->event(gui_event);
+                    break;
+                    }
+                case SDL_EVENT_KEY_UP: {
                   Event gui_event(event);
-                  if(gui_event.keysym.sym == SDLK_ESCAPE) {
+                  if(gui_event.key == SDLK_ESCAPE) {
                     getButtonPanel().selectQueryTool();
                     break;
                   }
-                  if(gui_event.keysym.sym == SDLK_b) {
+                  if(gui_event.key == SDLK_B) {
                     getButtonPanel().toggleBulldozeTool();
                     break;
                   }
-                  if(gui_event.keysym.sym == SDLK_F1) {
+                  if(gui_event.key == SDLK_F1) {
                     helpWindow->showTopic("help");
                       break;
                   }
-                  if(gui_event.keysym.sym == SDLK_F12) {
+                  if(gui_event.key == SDLK_F12) {
                     quickSave();
                     break;
                   }
-                  if(gui_event.keysym.sym == SDLK_F9) {
+                  if(gui_event.key == SDLK_F9) {
                     quickLoad();
                     break;
                   }
 #ifdef DEBUG
-                  if(gui_event.keysym.sym == SDLK_F5) {
+                  if(gui_event.key == SDLK_F5) {
                     testAllHelpFiles();
                     break;
                   }
 #endif
                   int need_break=true;
-                  switch(gui_event.keysym.sym) {
-                    case SDLK_BACKQUOTE: getMiniMap().mapViewChangeDisplayMode(MiniMap::NORMAL); break;
+                  switch(gui_event.key) {
+                    case SDLK_GRAVE: getMiniMap().mapViewChangeDisplayMode(MiniMap::NORMAL); break;
                     case SDLK_1: getMiniMap().mapViewChangeDisplayMode(MiniMap::STARVE); break;
                     case SDLK_2: getMiniMap().mapViewChangeDisplayMode(MiniMap::UB40); break;
                     case SDLK_3: getMiniMap().mapViewChangeDisplayMode(MiniMap::POWER); break;
@@ -561,16 +559,16 @@ Game::run() {
                   gui->event(gui_event);
                   break;
                 }
-                case SDL_MOUSEMOTION:
-                case SDL_MOUSEBUTTONUP:
-                case SDL_MOUSEBUTTONDOWN:
-                case SDL_MOUSEWHEEL:
-                case SDL_KEYDOWN: {
+                case SDL_EVENT_MOUSE_MOTION:
+                case SDL_EVENT_MOUSE_BUTTON_UP:
+                case SDL_EVENT_MOUSE_BUTTON_DOWN:
+                case SDL_EVENT_MOUSE_WHEEL:
+                case SDL_EVENT_KEY_DOWN: {
                     Event gui_event(event);
                     gui->event(gui_event);
                     break;
                 }
-                case SDL_QUIT: {
+                case SDL_EVENT_QUIT: {
                     saveCityNG(*world, getConfig()->userDataDir.get()
                       / "9_currentGameNG.scn.gz");
                     // push the QUIT event back for main menu to handle

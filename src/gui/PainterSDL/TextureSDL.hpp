@@ -23,7 +23,7 @@
 #ifndef __TEXTURESDL_HPP__
 #define __TEXTURESDL_HPP__
 
-#include <SDL.h>           // for SDL_Texture
+#include <SDL3/SDL.h>      // for SDL_Texture
 
 #include "../Texture.hpp"  // for Texture
 
