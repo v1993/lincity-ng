@@ -305,7 +305,7 @@ Config::save(std::filesystem::path configFile) {
 void
 Config::init(int argc, char** argv) {
   if(const char *envConfigFile = getenv("LINCITYNG_CONFIG_FILE"))
-    userDataDir.session = std::filesystem::path(envConfigFile);
+    configFile.session = std::filesystem::path(envConfigFile);
   if(const char *envAppDataDir = getenv("LINCITYNG_APP_DATA_DIR"))
     appDataDir.session = std::filesystem::path(envAppDataDir);
   if(const char *envUserDataDir = getenv("LINCITYNG_USER_DATA_DIR"))
