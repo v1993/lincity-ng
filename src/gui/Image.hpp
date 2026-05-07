@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define __IMAGE_HPP__
 
 #include <string>         // for string, basic_string
+#include <filesystem>
 
 #include "Component.hpp"  // for Component
 
@@ -47,13 +48,13 @@ public:
     void resize(float width, float height);
     void draw(Painter& painter);
 
-    std::string getFilename() const;
-    void setFile(const std::string &filename);
+    std::filesystem::path getFilename() const;
+    void setFile(const std::filesystem::path &filename);
 
 private:
     Texture* texture;
     bool tiling;
-    std::string filename;
+    std::filesystem::path filename;
 };
 
 #endif

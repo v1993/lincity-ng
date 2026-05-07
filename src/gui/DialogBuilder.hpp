@@ -23,6 +23,7 @@
 #include <list>        // for list
 #include <memory>
 #include <string>      // for string, basic_string
+#include <filesystem>
 
 class Document;
 class Image;
@@ -43,7 +44,7 @@ public:
   DialogBuilder& messageAddText(const std::string& content);
   DialogBuilder& messageAddTextBold(const std::string& content);
   DialogBuilder& image(std::unique_ptr<Image>&& image);
-  DialogBuilder& imageFile(const std::string& image);
+  DialogBuilder& imageFile(const std::filesystem::path& image);
   DialogBuilder& buttonSet(ButtonSet buttonSet);
   DialogBuilder& windowManager(WindowManager *windowManager);
 

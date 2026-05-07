@@ -85,7 +85,7 @@ Image::parse(xmlpp::TextReader& reader) {
   if(filename.empty())
     missingXmlAttribute(reader, "src");
 
-  texture = texture_manager->load(filename,
+  texture = texture_manager->load(filename.string(),
     grey ? TextureManager::FILTER_GREY : TextureManager::NO_FILTER);
 
   if(width <= 0 || height <= 0) {
@@ -116,16 +116,16 @@ Image::draw(Painter& painter) {
     painter.drawTexture(texture, Vector2(0, 0));
 }
 
-std::string Image::getFilename() const
+std::filesystem::path Image::getFilename() const
 {
     return filename;
 }
 
-void Image::setFile(const std::string &pfilename)
+void Image::setFile(const std::filesystem::path &pfilename)
 {
     filename=pfilename;
     texture = 0;
-    texture = texture_manager->load(pfilename);
+    texture = texture_manager->load(pfilename.string());
 
     if(width <= 0 || height <= 0) {
       width = texture->getWidth() + 1;

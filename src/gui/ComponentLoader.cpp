@@ -80,7 +80,7 @@ createComponent(const std::string& type, xmlpp::TextReader& reader) {
 
 std::unique_ptr<Component> loadGUIFile(const std::filesystem::path& filename) {
   std::filesystem::path fullpath = getConfig()->appDataDir.get() / filename;
-  xmlpp::TextReader reader(fullpath);
+  xmlpp::TextReader reader(fullpath.string());
 
   // seek to the first XML element
   if(!reader.read())
