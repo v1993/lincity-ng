@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <libxml++/ustring.h>             // for ustring
 #include <stdio.h>                        // for stderr
 #include <filesystem>                     // for path
+#include <string>
 
 #include "ComponentFactory.hpp"           // for IMPLEMENT_COMPONENT_FACTORY
 #include "Painter.hpp"                    // for Painter

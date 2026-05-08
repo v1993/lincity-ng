@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef __IMAGE_HPP__
 #define __IMAGE_HPP__
 
-#include <string>         // for string, basic_string
 #include <filesystem>
 
 #include "Component.hpp"  // for Component
