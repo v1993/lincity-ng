@@ -68,7 +68,7 @@ Sound::loadWaves() {
 
   std::filesystem::path directory = getConfig()->appDataDir.get() / "sounds";
   std::filesystem::path xmlfile = directory / "sounds.xml";
-  xmlpp::TextReader reader(xmlfile);
+  xmlpp::TextReader reader(xmlfile.string());
   if(!reader.read())
     throw std::runtime_error(fmt::format("file is empty: {}", xmlfile));
   while(reader.get_node_type() != xmlpp::TextReader::NodeType::Element) {
@@ -144,7 +144,7 @@ Sound::loadWaves() {
           resGrpVec[i]->chunks.push_back(chunk);
       }
       else {
-        std::string idName = getIdName(key);
+        std::string idName = getIdName(key.string());
         waves.insert(std::pair<std::string,MIX_Audio*>(idName, chunk));
       }
       key.clear();
@@ -176,7 +176,7 @@ void Sound::loadMusicTheme() {
       std::string("could not load music theme: " + theme));
 
   //Get the number of songs
-  xmlpp::TextReader reader(xml_name);
+  xmlpp::TextReader reader(xml_name.string());
   if(!reader.read())
     throw std::runtime_error(fmt::format("file is empty: {}", xml_name));
   while(reader.get_node_type() != xmlpp::TextReader::NodeType::Element) {

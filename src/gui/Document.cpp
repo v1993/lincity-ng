@@ -79,7 +79,7 @@ Document::parse(xmlpp::TextReader& reader) {
   reader.move_to_element();
 
   if(!srcPath.empty()) {
-    xmlpp::TextReader reader(srcPath);
+    xmlpp::TextReader reader(srcPath.string());
 
     // seek to the first XML element
     if(!reader.read())

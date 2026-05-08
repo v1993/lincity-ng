@@ -401,7 +401,7 @@ GameView::preReadImages(void) {
 
   std::filesystem::path fullpath = getConfig()->appDataDir.get() /
     "images" / "tiles" / "images.xml";
-  xmlpp::TextReader reader(fullpath);
+  xmlpp::TextReader reader(fullpath.string());
   if(!reader.read())
     throw std::runtime_error(fmt::format("file is empty: {}", fullpath));
   while(reader.get_node_type() != xmlpp::TextReader::NodeType::Element) {

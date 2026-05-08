@@ -74,7 +74,7 @@ ImportFactory::createComponent(xmlpp::TextReader& reader) {
     missingXmlAttribute(reader, "src");
 
 
-  xmlpp::TextReader nreader(importfile);
+  xmlpp::TextReader nreader(importfile.string());
   if(!nreader.read())
     throw std::runtime_error(fmt::format("file is empty: {}", importfile));
   while(nreader.get_node_type() != xmlpp::TextReader::NodeType::Element) {

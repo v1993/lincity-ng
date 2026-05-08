@@ -85,7 +85,7 @@ DialogBuilder::image(std::unique_ptr<Image>&& image) {
 }
 
 DialogBuilder&
-DialogBuilder::imageFile(const std::string& image) {
+DialogBuilder::imageFile(const std::filesystem::path& image) {
   if(!_image) {
     _image.reset(new Image());
   }
